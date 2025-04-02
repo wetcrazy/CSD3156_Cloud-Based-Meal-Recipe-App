@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .navbar { background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: white; text-decoration: none; margin: 0 10px; }
+        .container { padding: 20px; max-width: 300px; margin: 50px auto; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { width: 100%; padding: 10px; background: #333; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="Home.html">Home</a>
+    </div>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <input type="text" id="signup-username" placeholder="Username">
+        <input type="password" id="signup-password" placeholder="Password">
+        <input type="password" id="signup-confirm-password" placeholder="Confirm Password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+    <script>
+        function signup() {
+            const username = document.getElementById("signup-username").value;
+            const password = document.getElementById("signup-password").value;
+            const confirmPassword = document.getElementById("signup-confirm-password").value;
+            
+            if (username && password && confirmPassword) {
+                if (password !== confirmPassword) {
+                    alert("Passwords do not match.");
+                }
+                // Simulating user registration (replace with actual API call)
+                else if (username === "admin") {
+                    //alert("Sign-up successful!");
+                    window.location.href = "SignupPass.html";
+                }
+                else{
+                    alert("Username already exists! Please choose a different username.");
+                }
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+    </script>
+</body>
+</html>
