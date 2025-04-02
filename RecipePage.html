@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .navbar { background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a, .navbar button { color: white; text-decoration: none; margin: 0 10px; background: none; border: none; cursor: pointer; font-size: 16px; }
+        .navbar .auth-buttons { display: flex; }
+        .container { padding: 20px; max-width: 800px; margin: auto; }
+        .recipe-header { display: flex; align-items: center; justify-content: space-between; }
+        .bookmark-btn { background: gold; border: none; padding: 5px 10px; cursor: pointer; }
+        .disabled { background: gray; cursor: not-allowed; }
+        .recipe-images img { max-width: 100%; height: auto; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>
+            <a href="Home.html">Home</a>
+            <a href="RecipeList.html">Recipe List</a>
+        </div>
+        <div class="auth-buttons">
+            <button id="loginBtn">Login</button>
+            <button id="signupBtn">Sign Up</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="recipe-header">
+            <h1 id="recipe-title">Loading...</h1>
+            <button id="bookmarkBtn" class="bookmark-btn">Bookmark</button>
+        </div>
+        <p id="recipe-description">Fetching recipe details...</p>
+        <div class="recipe-images">
+            <img id="recipe-image" src="" alt="Recipe Image">
+        </div>
+        
+        <h2>Ingredients</h2>
+        <ul id="ingredients-list"></ul>
+        
+        <h2>Instructions</h2>
+        <ol id="instructions-list"></ol>
+    </div>
+    
+    <script>
+        let isLoggedIn = false; // Change this to true if the user is logged in
+        const bookmarkBtn = document.getElementById("bookmarkBtn");
+        const recipeTitle = document.getElementById("recipe-title");
+        const recipeDescription = document.getElementById("recipe-description");
+        const recipeImage = document.getElementById("recipe-image");
+        const ingredientsList = document.getElementById("ingredients-list");
+        const instructionsList = document.getElementById("instructions-list");
+        const loginBtn = document.getElementById("loginBtn");
+        const signupBtn = document.getElementById("signupBtn");
+
+        if (!isLoggedIn) {
+            bookmarkBtn.classList.add("disabled");
+            bookmarkBtn.disabled = true;
+        } else {
+            bookmarkBtn.addEventListener("click", () => {
+                alert("Recipe bookmarked!");
+            });
+        }
+
+        loginBtn.addEventListener("click", () => {
+            window.location.href = "Login.html"; // Redirect to login page
+        });
+
+        signupBtn.addEventListener("click", () => {
+            window.location.href = "Signup.html"; // Redirect to sign-up page
+        });
+
+        async function fetchRecipe(recipeId) {
+            try {
+                // Fetch recipe from AWS RDS backend API
+                const response = await fetch(`https://your-backend.com/api/recipes/${recipeId}`); // Replace with actual backend URL
+                const data = await response.json();
+
+                // Update UI with fetched data
+                recipeTitle.textContent = data.name;
+                recipeDescription.textContent = data.description;
+                recipeImage.src = data.image;
+                recipeImage.alt = data.name;
+
+                ingredientsList.innerHTML = data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('');
+                instructionsList.innerHTML = data.instructions.map(step => `<li>${step}</li>`).join('');
+            } catch (error) {
+                console.error("Error fetching recipe:", error);
+            }
+        }
+
+        // Example: Fetch recipe with ID 1 (change as needed)
+        fetchRecipe(1);
+    </script>
+</body>
+</html>
