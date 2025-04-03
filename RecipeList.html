@@ -77,17 +77,23 @@
     </script>
 </head>
 <body>
-    <header>
-        <h1>Recipe List</h1>
-    </header>
+    <div class="navbar">
+        <a href="index.html" class="navbar-title">
+            <h1>Online Cookbook</h1>
+        </a>
+        <div class="nav-links">
+            <button onclick="openPopup('loginPopup')">Login</button>
+            <button onclick="openPopup('signupPopup')">Signup</button>
+        </div>
+    </div>
     <div class="container">
         <div class="search-bar">
-            <input type="text" placeholder="Search for recipes...">
-            <button>Search</button>
+            <input type="text" placeholder="Search for recipes..." class="search-input">
+            <button class="search-btn">Search</button>
         </div>
         <div class="links">
-            <a href="CreateRecipe.html">Create Recipe</a>
-            <a href="BookmarkedRecipes.html">View Bookmarked Recipes</a>
+            <button class="nav-btn" onclick="window.location.href='CreateRecipe.html'">Create Recipe</button>
+            <button class="nav-btn" onclick="window.location.href='BookmarkedRecipes.html'">View Bookmarked Recipes</button>
         </div>
         <div class="recipe-list">
             <!-- Recipes will be dynamically loaded here -->
