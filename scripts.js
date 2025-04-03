@@ -32,3 +32,14 @@ async function login() {
     const data = await res.json();
     alert(data.message);
 }
+
+let isLoggedIn = false; // Change this to true if the user is logged in
+
+if (!isLoggedIn) {
+    bookmarkBtn.classList.add("disabled");
+    bookmarkBtn.disabled = true;
+} else {
+    bookmarkBtn.addEventListener("click", () => {
+        alert("Recipe bookmarked!");
+    });
+}
