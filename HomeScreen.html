@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Cookbook</title>
+    <style>
+        :root {
+            --background-color: #ffffed;
+            --foreground-color: white;
+            --button-color: #28a745;
+            --button-hover-color: #218838;
+            --navbar-color: rgba(255, 255, 255, 0.8);
+            --popup-background: white;
+            --popup-button-color: #28a745;
+            --popup-button-hover: #218838;
+            --text-color: black;
+            --heading-color: rgba(0, 50, 0, 1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('INSERT_BG_HERE.jpg') no-repeat center center fixed;
+            /*background: url('https://your-bucket-name.s3.amazonaws.com/background.jpg') no-repeat center center fixed;*/ /* TODO */
+            background-size: cover;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--navbar-color);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+        }
+
+        .navbar h1 {
+            color: var(--heading-color);
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .nav-links button {
+            background: var(--button-color);
+            color: var(--foreground-color);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .nav-links button:hover {
+            background: var(--button-hover-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 100px;
+            padding: 50px 20px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            color: var(--heading-color);
+        }
+        
+        .discover-button {
+            background: var(--button-color);
+            color: var(--foreground-color);
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .discover-button:hover {
+            background: var(--button-hover-color);
+        }
+
+        /* Featured Recipe */
+        .recipes {
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .featured-recipe {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 300px;
+        }
+
+        .recipe-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .recipe-card:hover {
+            box-shadow: 0 12px 18px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .recipe-card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .recipe-card h3 {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        /* Popup Styling */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--popup-background);
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            z-index: 1001;
+        }
+
+        .popup input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: block;
+            border: 1px solid #ccc;
+        }
+
+        .popup button {
+            background: var(--popup-button-color);
+            color: var(--foreground-color);
+            padding: 10px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .popup button:hover {
+            background: var(--popup-button-hover);
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* Overlay to close popup when clicking outside */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1>Online Cookbook</h1>
+        <div class="nav-links">
+            <button onclick="openPopup('loginPopup')">Login</button>
+            <button onclick="openPopup('signupPopup')">Signup</button>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Discover & Share Your Favorite Recipes!</h1>
+        <a href="recipes.html"><button class="discover-button">Discover Now!</button></a> <!--TODO: Link to recipe page-->
+    </div>
+
+    <!-- Featured Recipe -->
+    <section class="recipes">
+        <h2>Featured Recipe</h2>
+        <div class="featured-recipe">
+            <div class="recipe-card" id="recipe-card" onclick="goToRecipePage()"> <!--TODO: Link to recipe page while passing recipe ID-->
+                <img id="recipe-image" src="" alt="Recipe Image">
+                <h3 id="recipe-name"></h3>
+                <p id="recipe-desc"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overlay for popups -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" placeholder="Username">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Signup Popup -->
+    <div id="signupPopup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Signup</h2>
+        <input type="text" id="signupUsername" placeholder="Username">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <script>
+        function openPopup(popupId) {
+            document.getElementById(popupId).style.display = 'block';
+            document.getElementById('popupOverlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            let popups = document.querySelectorAll('.popup');
+            popups.forEach(popup => popup.style.display = 'none');
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+
+        async function signup() {  /* TODO: Call sign up function*/
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const res = await fetch('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            alert(data.message);
+        }
+
+        async function login() {/* TODO: Call login function*/
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            alert(data.message);
+        }
+
+        async function fetchRandomRecipe() {
+            try {
+                const response = await fetch('/random-recipe');
+                const recipe = await response.json();
+                recipeId = recipe.id; // Store recipe ID globally
+                document.getElementById('recipe-name').innerText = recipe.name;
+                document.getElementById('recipe-desc').innerText = recipe.description;
+                document.getElementById('recipe-image').src = recipe.image_url;
+                document.getElementById('recipe-image').alt = recipe.name;
+            } catch (error) {
+                console.error('Error fetching recipe:', error);
+                recipeId = 'Error_fetching_recipe_ID'; // Store recipe ID globally
+                document.getElementById('recipe-name').innerText = 'Error fetching recipe name';
+                document.getElementById('recipe-desc').innerText = 'Error fetching recipe description';
+                document.getElementById('recipe-image').src = 'Error fetching image URL';
+                document.getElementById('recipe-image').alt = 'Error fetching image alt text';
+            }
+        }
+
+        function goToRecipePage() {
+            if (recipeId) {
+                window.location.href = `recipe.html?id=${recipeId}`;
+            }
+        }
+
+        window.onload = fetchRandomRecipe;
+    </script>
+
+</body>
+</html>
