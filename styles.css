@@ -322,3 +322,94 @@ button[type="submit"]:hover {
 .back-button:hover {
     color: #28a745;
 }
+
+/* Make the entire recipe box clickable */
+.recipe-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+/* Recipe container */
+.recipe-box {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.recipe-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Thumbnail styling */
+.recipe-thumbnail {
+    flex: 0 0 120px;
+    margin-right: 15px;
+}
+
+.recipe-thumbnail img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Recipe details */
+.recipe-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align content to the left */
+    justify-content: center;
+}
+
+.recipe-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0 0 5px;
+    text-align: left; /* Ensure text is aligned to the left */
+}
+
+.recipe-description {
+    font-size: 1rem;
+    color: #555;
+    margin: 0 0 10px;
+    text-align: left; /* Ensure text is aligned to the left */
+}
+
+.recipe-cooking-time {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0;
+    text-align: left; /* Ensure text is aligned to the left */
+}
+
+/* Bookmark button */
+.recipe-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bookmark-btn {
+    padding: 10px 15px;
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.bookmark-btn:hover {
+    background-color: #e65b50;
+}

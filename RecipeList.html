@@ -26,19 +26,21 @@
                 recipeDiv.classList.add("recipe");
 
                 recipeDiv.innerHTML = `
-                    <div class="recipe-thumbnail">
-                        <img src="${recipe.thumbnail}" alt="${recipe.name} Thumbnail">
-                    </div>
-                    <div class="recipe-content">
-                        <h3 class="recipe-title">
-                            <a href="javascript:void(0);" onclick="goToRecipePage(${recipe.id})">${recipe.name}</a>
-                        </h3>
-                        <p class="recipe-description">${recipe.description}</p>
-                        <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.cookingTime}</p>
-                    </div>
-                    <div class="recipe-actions">
-                        <button class="bookmark-btn popup" onclick="bookmarkRecipe()">Bookmark</button>
-                    </div>
+                    <a href="javascript:void(0);" onclick="goToRecipePage(${recipe.id})" class="recipe-link">
+                        <div class="recipe-box">
+                            <div class="recipe-thumbnail">
+                                <img src="${recipe.thumbnail}" alt="${recipe.name} Thumbnail">
+                            </div>
+                            <div class="recipe-details">
+                                <h3 class="recipe-title">${recipe.name}</h3>
+                                <p class="recipe-description">${recipe.description}</p>
+                                <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.cookingTime}</p>
+                            </div>
+                            <div class="recipe-actions">
+                                <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe()">Bookmark</button>
+                            </div>
+                        </div>
+                    </a>
                 `;
 
                 recipeList.appendChild(recipeDiv);
