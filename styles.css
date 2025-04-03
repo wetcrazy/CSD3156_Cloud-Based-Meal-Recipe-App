@@ -15,7 +15,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: url('background.jpg') no-repeat center center fixed;
+    background: url('https://foodrecipe-bucket-1.s3.amazonaws.com/public/background.jpg') no-repeat center center fixed;
     /*background: url('https://your-bucket-name.s3.amazonaws.com/background.jpg') no-repeat center center fixed;*/ /* TODO */
     background-size: cover;
     text-align: center;
@@ -233,3 +233,78 @@ body {
     text-align: left;
     padding-left: 20px;
 }
+
+/* Create Recipe Page */
+.create-recipe-form {
+    padding: 100px 20px 40px;
+    max-width: 800px;
+    margin: auto;
+    background: var(--foreground-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+}
+
+.create-recipe-form label {
+    display: block;
+    margin-top: 15px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.create-recipe-form input[type="text"],
+.create-recipe-form textarea,
+.create-recipe-form select,
+.create-recipe-form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.ingredient-list {
+    margin-top: 10px;
+}
+
+.ingredient-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.ingredient-group select,
+.ingredient-group input {
+    flex: 1;
+}
+
+/* Reuse .add-btn and .remove-btn from existing styles */
+
+button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--button-color);
+    color: var(--foreground-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: var(--button-hover-color);
+}
+
+.submit-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--button-color);
+    color: var(--foreground-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .submit-btn:hover {
+    background-color: var(--button-hover-color);
+  }
