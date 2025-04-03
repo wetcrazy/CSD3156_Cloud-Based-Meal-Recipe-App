@@ -4,47 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Page</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .navbar { background: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .navbar a, .navbar button { color: white; text-decoration: none; margin: 0 10px; background: none; border: none; cursor: pointer; font-size: 16px; }
-        .navbar .auth-buttons { display: flex; }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        .recipe-header { display: flex; align-items: center; justify-content: space-between; }
-        .bookmark-btn { background: gold; border: none; padding: 5px 10px; cursor: pointer; }
-        .disabled { background: gray; cursor: not-allowed; }
-        .recipe-images img { max-width: 100%; height: auto; margin-top: 10px; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <!-- Navbar -->
     <div class="navbar">
-        <div>
-            <a href="Home.html">Home</a>
-            <a href="RecipeList.html">Recipe List</a>
-        </div>
-        <div class="auth-buttons">
-            <button id="loginBtn">Login</button>
-            <button id="signupBtn">Sign Up</button>
+        <a href="Home.html" class="navbar-title">
+            <h1>Online Cookbook</h1>
+        </a>
+        <div class="nav-links">
+            <button onclick="openPopup('loginPopup')">Login</button>
+            <button onclick="openPopup('signupPopup')">Signup</button>
         </div>
     </div>
-    
+
+    <!-- Recipe Content -->
     <div class="container">
         <div class="recipe-header">
             <h1 id="recipe-title">Loading...</h1>
             <button id="bookmarkBtn" class="bookmark-btn">Bookmark</button>
         </div>
         <p id="recipe-description">Fetching recipe details...</p>
+
+        <!-- Recipe Image -->
         <div class="recipe-images">
             <img id="recipe-image" src="" alt="Recipe Image">
         </div>
-        
-        <h2>Ingredients</h2>
-        <ul id="ingredients-list"></ul>
-        
-        <h2>Instructions</h2>
-        <ol id="instructions-list"></ol>
+
+        <!-- Ingredients Section -->
+        <div class="recipe-section">
+            <h2>Ingredients</h2>
+            <ul id="ingredients-list"></ul>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="recipe-section">
+            <h2>Instructions</h2>
+            <ol id="instructions-list"></ol>
+        </div>
     </div>
-    
+
     <script>
         let isLoggedIn = false; // Change this to true if the user is logged in
         const bookmarkBtn = document.getElementById("bookmarkBtn");
@@ -92,8 +92,11 @@
             }
         }
 
-        // Example: Fetch recipe with ID 1 (change as needed)
-        fetchRecipe(1);
+        // Example: Fetch recipe with ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const recipeId = urlParams.get('id') || 1;
+        fetchRecipe(recipeId);
     </script>
+
 </body>
 </html>
