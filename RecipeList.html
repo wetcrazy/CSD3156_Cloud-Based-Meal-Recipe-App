@@ -4,105 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
-
-        header {
-            background-color: #ff6f61;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-bar {
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            width: calc(100% - 100px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .search-bar button {
-            padding: 10px 20px;
-            background-color: #ff6f61;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .links {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .links a {
-            text-decoration: none;
-            color: #ff6f61;
-            font-weight: bold;
-        }
-
-        .recipe {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .recipe img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-right: 20px;
-        }
-
-        .recipe-details {
-            flex: 1;
-        }
-
-        .recipe-details h3 {
-            margin: 0 0 10px;
-        }
-
-        .recipe-details p {
-            margin: 5px 0;
-            color: #555;
-        }
-
-        .bookmark-btn {
-            padding: 10px 20px;
-            background-color: #ff6f61;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
     <script>
         function bookmarkRecipe() {
             alert("Recipe saved!");
         }
+
+        function goToRecipePage(recipeId) {
+            // Navigate to the recipe page with the specific recipe ID
+            // Replace 'RecipePage.html' with the actual URL structure for your recipe pages
+            window.location.href = `RecipePage.html?id=${recipeId}`;
+        }
+
+        // Function to dynamically display recipes
+        function displayRecipes() {
+            const recipeList = document.querySelector(".recipe-list");
+            recipeList.innerHTML = ""; // Clear existing content
+
+            recipes.forEach(recipe => {
+                const recipeDiv = document.createElement("div");
+                recipeDiv.classList.add("recipe");
+
+                recipeDiv.innerHTML = `
+                    <div class="recipe-thumbnail">
+                        <img src="${recipe.thumbnail}" alt="${recipe.name} Thumbnail">
+                    </div>
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">
+                            <a href="javascript:void(0);" onclick="goToRecipePage(${recipe.id})">${recipe.name}</a>
+                        </h3>
+                        <p class="recipe-description">${recipe.description}</p>
+                        <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.cookingTime}</p>
+                    </div>
+                    <div class="recipe-actions">
+                        <button class="bookmark-btn popup" onclick="bookmarkRecipe()">Bookmark</button>
+                    </div>
+                `;
+
+                recipeList.appendChild(recipeDiv);
+            });
+        }
+
+        // Example recipes array (replace this with data fetched from your database or API)
+        const recipes = [
+            {
+                id: 1,
+                name: "Spaghetti Bolognese",
+                description: "A classic Italian pasta dish with rich meat sauce.",
+                cookingTime: "45 minutes",
+                thumbnail: "spaghetti.jpg"
+            },
+            {
+                id: 2,
+                name: "Chicken Curry",
+                description: "A flavorful curry with tender chicken pieces.",
+                cookingTime: "60 minutes",
+                thumbnail: "chicken-curry.jpg"
+            },
+            {
+                id: 3,
+                name: "Vegetable Stir Fry",
+                description: "A quick and healthy stir fry with fresh vegetables.",
+                cookingTime: "20 minutes",
+                thumbnail: "stir-fry.jpg"
+            }
+        ];
+
+        // Call the function to display recipes when the page loads
+        document.addEventListener("DOMContentLoaded", displayRecipes);
     </script>
 </head>
 <body>
@@ -119,20 +88,7 @@
             <a href="BookmarkedRecipes.html">View Bookmarked Recipes</a>
         </div>
         <div class="recipe-list">
-            <!-- Example recipe item -->
-            <!-- Replace this section with dynamically loaded data -->
-            <div class="recipe">
-                <img src="thumbnail-placeholder.jpg" alt="Recipe Thumbnail">
-                <div class="recipe-details">
-                    <a href="RecipePage.html">
-                        <h3>Recipe Name</h3>
-                        <p>Description of the recipe goes here.</p>
-                        <p>Cooking Time: 30 minutes</p>
-                    </a>
-                </div>
-                <button class="bookmark-btn" onclick="bookmarkRecipe()">Bookmark</button>
-            </div>
-            <!-- Repeat for more recipes -->
+            <!-- Recipes will be dynamically loaded here -->
         </div>
     </div>
 </body>
