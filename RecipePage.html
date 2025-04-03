@@ -22,6 +22,7 @@
     <!-- Recipe Content -->
     <div class="container">
         <div class="recipe-header">
+            <button class="back-button" onclick="goBack()">&larr;</button>
             <h1 id="recipe-title">Loading...</h1>
             <button id="bookmarkBtn" class="bookmark-btn">Bookmark</button>
         </div>
@@ -45,6 +46,28 @@
         </div>
     </div>
 
+    <!-- Overlay for popups -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" placeholder="Username">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Signup Popup -->
+    <div id="signupPopup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Signup</h2>
+        <input type="text" id="signupUsername" placeholder="Username">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <script src="scripts.js"></script>
     <script>
         let isLoggedIn = false; // Change this to true if the user is logged in
         const bookmarkBtn = document.getElementById("bookmarkBtn");
@@ -92,10 +115,14 @@
             }
         }
 
+        function goBack() {
+           window.location.href = "RecipeList.html"; // Redirect to Recipe List
+        }
+
         // Example: Fetch recipe with ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const recipeId = urlParams.get('id') || 1;
-        fetchRecipe(recipeId);
+        fetchRecipe(recipeId); // Fetch recipe on page load
     </script>
 
 </body>
