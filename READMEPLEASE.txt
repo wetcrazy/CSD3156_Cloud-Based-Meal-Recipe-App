@@ -1,5 +1,5 @@
 Use the following names to link the pages correctly
-1. Homepage 			-> Home.html
+1. Homepage 			-> index.html
 2. Recipe List 		-> RecipeList.html
 3. Recipes				-> RecipePage.html
 4. Saved Recipes 	-> SavedList.html
