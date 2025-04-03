@@ -99,6 +99,11 @@
             cursor: pointer;
         }
     </style>
+    <script>
+        function bookmarkRecipe() {
+            alert("Recipe saved!");
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -119,11 +124,13 @@
             <div class="recipe">
                 <img src="thumbnail-placeholder.jpg" alt="Recipe Thumbnail">
                 <div class="recipe-details">
-                    <h3>Recipe Name</h3>
-                    <p>Description of the recipe goes here.</p>
-                    <p>Cooking Time: 30 minutes</p>
+                    <a href="RecipePage.html">
+                        <h3>Recipe Name</h3>
+                        <p>Description of the recipe goes here.</p>
+                        <p>Cooking Time: 30 minutes</p>
+                    </a>
                 </div>
-                <button class="bookmark-btn">Bookmark</button>
+                <button class="bookmark-btn" onclick="bookmarkRecipe()">Bookmark</button>
             </div>
             <!-- Repeat for more recipes -->
         </div>
