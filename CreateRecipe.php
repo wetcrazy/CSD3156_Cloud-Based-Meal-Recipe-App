@@ -47,6 +47,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username'])) {
         echo "<script>alert('Error saving recipe.');</script>";
     }
 }
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['ingredientName']) && isset($_POST['ingredientUnit'])) {
+  $ingredientName = mysqli_real_escape_string($connection, $_POST['ingredientName']);
+  $ingredientUnit = mysqli_real_escape_string($connection, $_POST['ingredientUnit']);
+
+  if (!empty($ingredientName) && !empty($ingredientUnit)) {
+      $insertIngredient = "INSERT INTO INGREDIENTS (ingredientName, ingredientUnit)
+                           VALUES ('$ingredientName', '$ingredientUnit')";
+      if (mysqli_query($connection, $insertIngredient)) {
+          echo "<script>alert('Ingredient added successfully.');</script>";
+      } else {
+          echo "<script>alert('Failed to add ingredient.');</script>";
+      }
+  }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,6 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username'])) {
       </div>
 
       <button type="button" class="submit-btn" onclick="addIngredient()">+ Add Ingredient</button>
+      <button type="button" class="submit-btn" onclick="showAddIngredientModal()">+ Add New Ingredient</button>
 
       <label for="recipeImage">Upload Image:</label>
       <input type="file" name="recipeImage" accept="image/*" required>
@@ -112,6 +129,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username'])) {
       <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
   </div>
+  <!-- Add Ingredient Modal -->
+  <div class="popup-overlay" id="popupOverlay" onclick="hideAddIngredientModal()"></div>
+  <div class="popup" id="addIngredientModal">
+    <form action="CreateRecipe.php" method="POST">
+      <h3>Add New Ingredient</h3>
+      <input type="text" name="ingredientName" placeholder="Ingredient Name" required>
+      <input type="text" name="ingredientUnit" placeholder="Unit (e.g. grams)" required>
+      <button type="submit" class="submit-btn">Add Ingredient</button>
+      <button type="button" class="remove-btn" onclick="hideAddIngredientModal()">Cancel</button>
+    </form>
+  </div>
+
 <?php else: ?>
   <div class="create-recipe-form">
     <p><strong>You must be logged in to create a recipe.</strong></p>
@@ -146,6 +175,16 @@ function addIngredient() {
 
 function removeIngredient(btn) {
   btn.parentElement.remove();
+}
+
+function showAddIngredientModal() {
+  document.getElementById("addIngredientModal").style.display = "block";
+  document.getElementById("popupOverlay").style.display = "block";
+}
+
+function hideAddIngredientModal() {
+  document.getElementById("addIngredientModal").style.display = "none";
+  document.getElementById("popupOverlay").style.display = "none";
 }
 </script>
 
