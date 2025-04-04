@@ -54,32 +54,41 @@ function Login($connection, $userName, $userPassword) {
 }
 
 function AddIngredient($connection, $ingredientName, $ingredientUnit) {
-    $query = "INSERT INTO INGREDIENTS (ingredientName, ingredientUnit) VALUES (?, ?)";
-    $stmt = $connection->prepare($query);
+    $stmt = $connection->prepare("INSERT INTO INGREDIENTS (ingredientName, ingredientUnit) VALUES (?, ?)");
     $stmt->bind_param("ss", $ingredientName, $ingredientUnit);
     return $stmt->execute();
 }
 
-function GetBookmarkedRecipes($connection, $userName) {
-    $query = "SELECT userBookmarkedRecipes FROM USERS WHERE userName = ?";
-    $stmt = $connection->prepare($query);
-    $stmt->bind_param("s", $userName);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        return json_decode($row["userBookmarkedRecipes"], true) ?? [];
-    }
-    
-    return [];
+function BookmarkRecipe($connection, $userId, $recipeId) {
+    $stmt = $connection->prepare("INSERT INTO BOOKMARKS (userID, recipeID) VALUES (?, ?)");
+    $stmt->bind_param("ii", $userId, $recipeId);
+    return $stmt->execute();
 }
 
-function GetRecipes($connection, $userName) {
-    $query = "SELECT * FROM RECIPES WHERE userName = ?";
-    $stmt = $connection->prepare($query);
+function GetBookmarkedRecipes($connection, $userId) {
+    $stmt = $connection->prepare("SELECT RECIPES.* FROM RECIPES INNER JOIN BOOKMARKS ON RECIPES.recipeID = BOOKMARKS.recipeID WHERE BOOKMARKS.userID = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function GetUserRecipes($connection, $userName) {
+    $stmt = $connection->prepare("SELECT * FROM RECIPES WHERE userName = ?");
     $stmt->bind_param("s", $userName);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function GetRandomRecipe($connection) {
+    $stmt = $connection->prepare("SELECT recipeID, recipeName, recipeDescription, recipeImage FROM RECIPES ORDER BY RAND() LIMIT 1");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
+function AddRecipeIngredient($connection, $recipeId, $ingredientId, $ingredientAmount) {
+    $stmt = $connection->prepare("INSERT INTO RECIPE_INGREDIENTS (recipeID, ingredientID, ingredientAmount) VALUES (?, ?, ?)");
+    $stmt->bind_param("iid", $recipeId, $ingredientId, $ingredientAmount);
+    return $stmt->execute();
 }
 
 // Function to check if a table exists in the database
