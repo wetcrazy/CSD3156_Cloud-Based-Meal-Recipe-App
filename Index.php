@@ -44,9 +44,9 @@ include "./recipes.php"; // Include the recipes functions
     <h1>Online Cookbook</h1>
   </a>
   <div class="nav-links">
+  <?php if (!isset($_SESSION['username'])): ?>
     <button onclick="openPopup('loginPopup')">Login</button>
     <button onclick="openPopup('signupPopup')">Signup</button>
-  </div>
 </div>
 
 <!-- Hero Section -->
