@@ -83,7 +83,7 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="Index.php" class="navbar-title">
+        <a href="index.php" class="navbar-title">
             <h1>Online Cookbook</h1>
         </a>
         <div class="nav-links">
