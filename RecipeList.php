@@ -95,6 +95,30 @@
             <?php endif; ?>
         </div>
     </div>
+    <!-- Overlay for popups -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+
+    <!-- Signup Popup -->
+    <div id="signupPopup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Signup</h2>
+    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+        <input type="text" name="signupUsername" placeholder="Username" required>
+        <input type="password" name="signupPassword" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+    </div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Login</h2>
+    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+        <input type="text" name="loginUsername" placeholder="Username" required>
+        <input type="password" name="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+    </div>
     <div class="container">
         <div class="search-bar">
             <input type="text" placeholder="Search for recipes..." class="search-input">
@@ -103,7 +127,7 @@
         <div class="links">
         <?php if (isset($_SESSION['username'])): ?>
             <button class="nav-btn" onclick="window.location.href='CreateRecipe.php'">Create Recipe</button>
-            <button class="nav-btn" onclick="window.location.href='BookmarkedRecipes.html'">View Bookmarked Recipes</button>
+            <button class="nav-btn" onclick="window.location.href='BookmarkedRecipes.php'">View Bookmarked Recipes</button>
         <?php endif; ?>
         </div>
         <div class="recipe-list">
