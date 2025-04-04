@@ -97,8 +97,10 @@
             <button class="search-btn">Search</button>
         </div>
         <div class="links">
+        <?php if (!isset($_SESSION['username'])): ?>
             <button class="nav-btn" onclick="window.location.href='CreateRecipe.html'">Create Recipe</button>
             <button class="nav-btn" onclick="window.location.href='BookmarkedRecipes.html'">View Bookmarked Recipes</button>
+        <?php endif; ?>
         </div>
         <div class="recipe-list">
             <!-- Recipes will be dynamically loaded here -->
