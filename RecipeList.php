@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe List</title>
     <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <script src="scripts.js"></script> <!-- Link to external JavaScript file -->
     <script>
         function bookmarkRecipe() {
             alert("Recipe saved!");
@@ -84,6 +85,7 @@
     </script>
 </head>
 <body>
+    <!-- Navbar -->
     <div class="navbar">
         <a href="index.php" class="navbar-title">
             <h1>Online Cookbook</h1>
@@ -97,30 +99,7 @@
             <?php endif; ?>
         </div>
     </div>
-    <!-- Overlay for popups -->
-    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
-
-    <!-- Signup Popup -->
-    <div id="signupPopup" class="popup">
-    <span class="close" onclick="closePopup()">&times;</span>
-    <h2>Signup</h2>
-    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
-        <input type="text" name="signupUsername" placeholder="Username" required>
-        <input type="password" name="signupPassword" placeholder="Password" required>
-        <button type="submit">Sign Up</button>
-    </form>
-    </div>
-
-    <!-- Login Popup -->
-    <div id="loginPopup" class="popup">
-    <span class="close" onclick="closePopup()">&times;</span>
-    <h2>Login</h2>
-    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
-        <input type="text" name="loginUsername" placeholder="Username" required>
-        <input type="password" name="loginPassword" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-    </div>
+    <!-- Recipe List Content -->
     <div class="container">
         <div class="search-bar">
             <input type="text" placeholder="Search for recipes..." class="search-input">
@@ -136,5 +115,26 @@
             <!-- Recipes will be dynamically loaded here -->
         </div>
     </div>
+    <!-- Overlay for popups -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" placeholder="Username">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Signup Popup -->
+    <div id="signupPopup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Signup</h2>
+        <input type="text" id="signupUsername" placeholder="Username">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+
 </body>
 </html>
