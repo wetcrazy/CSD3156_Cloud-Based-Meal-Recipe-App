@@ -14,6 +14,8 @@
     
     $database = mysqli_select_db($connection, DB_DATABASE);
 
+    $userId = $_SESSION['user_id']; // Get user ID from the session
+
     // Get recipe ID from URL
     $recipeId = isset($_GET['id']) ? intval($_GET['id']) : 1;
 
@@ -77,7 +79,9 @@
         <div class="recipe-header">
             <button class="back-button" onclick="goBack()">&larr;</button>
             <h1><?php echo htmlspecialchars($recipe['recipeName']); ?></h1>
-            <button id="bookmarkBtn" class="bookmark-btn">Bookmark</button>
+            <?php if (isset($_SESSION['username'])): ?>
+                <button class="bookmark-button" onclick="bookmarkRecipe(<?php echo $recipeId; ?>)">Bookmark</button>
+            <?php endif; ?>
         </div>
         <p><?php echo htmlspecialchars($recipe['recipeDescription']); ?></p>
 
@@ -106,6 +110,19 @@
     <script>
         function goBack() {
             window.location.href = "RecipeList.php"; // Redirect to Recipe List
+        }
+
+        function bookmarkRecipe(recipeId) {
+            // AJAX call to bookmark the recipe
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "bookmarkRecipe.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    alert("Recipe bookmarked successfully!");
+                }
+            };
+            xhr.send("recipeId=" + recipeId);
         }
     </script>
 
