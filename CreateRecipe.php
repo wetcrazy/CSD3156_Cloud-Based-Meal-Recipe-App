@@ -48,7 +48,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username'])) {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['ingredientName']) && isset($_POST['ingredientUnit'])) {
+if (
+  $_SERVER["REQUEST_METHOD"] === "POST" &&
+  isset($_POST['formType']) && 
+  $_POST['formType'] === "addIngredient"
+) {
   $ingredientName = mysqli_real_escape_string($connection, $_POST['ingredientName']);
   $ingredientUnit = mysqli_real_escape_string($connection, $_POST['ingredientUnit']);
 
@@ -56,7 +60,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['ingredientName']) && 
       $insertIngredient = "INSERT INTO INGREDIENTS (ingredientName, ingredientUnit)
                            VALUES ('$ingredientName', '$ingredientUnit')";
       if (mysqli_query($connection, $insertIngredient)) {
-          echo "<script>alert('Ingredient added successfully.');</script>";
+          echo "<script>alert('Ingredient added successfully.'); window.location.href = 'CreateRecipe.php';</script>";
+          exit;
       } else {
           echo "<script>alert('Failed to add ingredient.');</script>";
       }
@@ -133,6 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['ingredientName']) && 
   <div class="popup-overlay" id="popupOverlay" onclick="hideAddIngredientModal()"></div>
   <div class="popup" id="addIngredientModal">
     <form action="CreateRecipe.php" method="POST">
+      <input type="hidden" name="formType" value="addIngredient">
       <h3>Add New Ingredient</h3>
       <input type="text" name="ingredientName" placeholder="Ingredient Name" required>
       <input type="text" name="ingredientUnit" placeholder="Unit (e.g. grams)" required>
