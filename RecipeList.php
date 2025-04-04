@@ -42,7 +42,9 @@
                                 <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.cookingTime}</p>
                             </div>
                             <div class="recipe-actions">
+                            <?php if (isset($_SESSION['username'])): ?>
                                 <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe()">Bookmark</button>
+                            <?php endif; ?>
                             </div>
                         </div>
                     </a>
