@@ -1,6 +1,4 @@
-CREATE DATABASE IF NOT EXISTS recipe;
-
-USE recipe;
+USE foodrecipe_db1;
 
 -- Create the USERS table
 CREATE TABLE IF NOT EXISTS USERS (

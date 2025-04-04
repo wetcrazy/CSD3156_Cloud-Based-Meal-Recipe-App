@@ -1,6 +1,6 @@
 <?php 
 
-include "../inc/dbinfo.inc"; // Database connection
+include "./dbinfo.inc"; // Database connection
 
 function SignUp($connection, $userName, $userPassword) {
     // Check if the username already exists
