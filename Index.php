@@ -56,7 +56,7 @@ include "./recipes.php"; // Include the recipes functions
 <!-- Hero Section -->
 <div class="hero">
   <h1>Discover & Share Your Favorite Recipes!</h1>
-  <a href="RecipeList.html"><button class="discover-button">Discover Now!</button></a>
+  <a href="RecipeList.php"><button class="discover-button">Discover Now!</button></a>
 </div>
 
 <!-- Featured Recipe -->
