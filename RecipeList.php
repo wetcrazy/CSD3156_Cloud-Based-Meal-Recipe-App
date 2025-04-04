@@ -13,7 +13,7 @@
         function goToRecipePage(recipeId) {
             // Navigate to the recipe page with the specific recipe ID
             // Replace 'RecipePage.html' with the actual URL structure for your recipe pages
-            window.location.href = `RecipePage.html?id=${recipeId}`;
+            window.location.href = `RecipePage.php?id=${recipeId}`;
         }
 
         // Function to dynamically display recipes
@@ -78,7 +78,7 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="index.html" class="navbar-title">
+        <a href="Index.php" class="navbar-title">
             <h1>Online Cookbook</h1>
         </a>
         <div class="nav-links">
