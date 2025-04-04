@@ -3,6 +3,15 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+    
+    // Establish database connection
+    $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
+    if (mysqli_connect_errno()) {
+         die(json_encode(["error" => "Failed to connect to MySQL: " . mysqli_connect_error()]));
+    }
+    mysqli_select_db($connection, DB_DATABASE);
+    // Example recipes array (replace this with data fetched from your database or API)
+    $recipes = GetAllRecipes($connection);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,14 +32,7 @@
             window.location.href = `RecipePage.php?id=${recipeId}`;
         }
 
-        // Example recipes array (replace this with data fetched from your database or API)
-        $recipes = GetAllRecipes($connection);
-        // Establish database connection
-        $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
-        if (mysqli_connect_errno()) {
-            die(json_encode(["error" => "Failed to connect to MySQL: " . mysqli_connect_error()]));
-        }
-        mysqli_select_db($connection, DB_DATABASE); 
+        
 
         // Function to dynamically display recipes
         function displayRecipes() {
