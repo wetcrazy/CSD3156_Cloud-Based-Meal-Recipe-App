@@ -54,10 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
     $recipeSteps = mysqli_real_escape_string($connection, $_POST['recipeSteps']);
     $userName = $_SESSION['username'];
 
-    $imagePath = '';
-    if (isset($_FILES['recipeImage']) && $_FILES['recipeImage']['error'] === UPLOAD_ERR_OK) {
-        $imagePath = 'images/placeholder.jpg'; // Placeholder logic
-    }
+    $imagePath = isset($_POST['imageUrl']) ? mysqli_real_escape_string($connection, $_POST['imageUrl']) : '';
 
     $insertRecipe = "INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName)
                      VALUES ('$recipeName', '$recipeDescription', '$imagePath', $recipeTime, '$recipeSteps', '$userName')";
@@ -149,7 +146,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
       <p id="add-ingredient-message"></p>
 
       <label for="recipeImage">Upload Image:</label>
-      <input type="file" name="recipeImage" accept="image/*" required>
+      <input type="file" id="recipeImage" accept="image/*" required>
+      <input type="hidden" name="imageUrl" id="imageUrl"> <!-- To store final S3 URL -->
 
       <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
@@ -253,6 +251,48 @@ function closePopup() {
   document.getElementById('popupOverlay').style.display = 'none';
   document.getElementById('ingredientPopup').style.display = 'none';
 }
+
+async function uploadImageToS3(file) {
+  const response = await fetch('http://localhost:3000/generate-presigned-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filename: file.name,
+      filetype: file.type
+    })
+  });
+
+  const data = await response.json();
+  const s3Url = data.url;
+
+  // Upload file to S3
+  await fetch(s3Url, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type },
+    body: file
+  });
+
+  // Extract public URL
+  const publicUrl = s3Url.split('?')[0];
+  return publicUrl;
+}
+
+// Override form submission to wait for image upload
+document.querySelector('form').addEventListener('submit', async (e) => {
+  const imageInput = document.getElementById('recipeImage');
+  if (imageInput.files.length > 0) {
+    e.preventDefault(); // Stop form from submitting immediately
+    const file = imageInput.files[0];
+    try {
+      const imageUrl = await uploadImageToS3(file);
+      document.getElementById('imageUrl').value = imageUrl;
+      e.target.submit(); // Submit form after S3 upload
+    } catch (err) {
+      alert("Image upload failed.");
+      console.error(err);
+    }
+  }
+});
 </script>
 
 <?php mysqli_close($connection); ?>
