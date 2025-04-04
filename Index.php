@@ -47,10 +47,11 @@ include "./recipes.php"; // Include the recipes functions
     <?php if (!isset($_SESSION['username'])): ?>
       <button onclick="openPopup('loginPopup')">Login</button>
       <button onclick="openPopup('signupPopup')">Signup</button>
-    <?php endif; ?> <!-- Properly closing the if statement -->
+    <?php else: ?>
+      <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+    <?php endif; ?>
   </div>
 </div>
-
 
 <!-- Hero Section -->
 <div class="hero">
@@ -122,7 +123,7 @@ include "./recipes.php"; // Include the recipes functions
 
   function goToRecipePage() {
     if (recipeId) {
-      window.location.href = `RecipePage.html?id=${recipeId}`;
+      window.location.href = `RecipePage.php?id=${recipeId}`;
     }
   }
 </script>

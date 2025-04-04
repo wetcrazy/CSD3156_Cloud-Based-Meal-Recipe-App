@@ -82,8 +82,12 @@
             <h1>Online Cookbook</h1>
         </a>
         <div class="nav-links">
-            <button onclick="openPopup('loginPopup')">Login</button>
-            <button onclick="openPopup('signupPopup')">Signup</button>
+            <?php if (!isset($_SESSION['username'])): ?>
+                <button onclick="openPopup('loginPopup')">Login</button>
+                <button onclick="openPopup('signupPopup')">Signup</button>
+            <?php else: ?>
+                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+            <?php endif; ?>
         </div>
     </div>
     <div class="container">

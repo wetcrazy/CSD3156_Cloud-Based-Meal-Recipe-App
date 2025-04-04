@@ -10,12 +10,16 @@
 
     <!-- Navbar -->
     <div class="navbar">
-        <a href="index.html" class="navbar-title">
+        <a href="Index.php" class="navbar-title">
             <h1>Online Cookbook</h1>
         </a>
         <div class="nav-links">
-            <button onclick="openPopup('loginPopup')">Login</button>
-            <button onclick="openPopup('signupPopup')">Signup</button>
+            <?php if (!isset($_SESSION['username'])): ?>
+                <button onclick="openPopup('loginPopup')">Login</button>
+                <button onclick="openPopup('signupPopup')">Signup</button>
+            <?php else: ?>
+                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -96,7 +100,7 @@
         }
 
         function goBack() {
-           window.location.href = "RecipeList.html"; // Redirect to Recipe List
+           window.location.href = "RecipeList.php"; // Redirect to Recipe List
         }
 
         // Example: Fetch recipe with ID from URL parameters
