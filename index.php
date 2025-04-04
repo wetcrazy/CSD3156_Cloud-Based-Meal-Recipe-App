@@ -19,13 +19,18 @@
 <?php
     $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
 
-    // $featuredRecipe = GetRandomRecipe($connection);
-
     if (mysqli_connect_errno()) {
         echo "<p>Failed to connect to MySQL: " . mysqli_connect_error() . "</p>";
     }
 
     $database = mysqli_select_db($connection, DB_DATABASE);
+
+    $featuredRecipe = null;
+    $randomRecipeQuery = "SELECT * FROM RECIPES ORDER BY RAND() LIMIT 1";
+    $result = mysqli_query($connection, $randomRecipeQuery);
+    if ($result && mysqli_num_rows($result) > 0) {
+        $featuredRecipe = mysqli_fetch_assoc($result);
+    }
 
     $signUpName = isset($_POST['signupUsername']) ? mysqli_real_escape_string($connection, $_POST['signupUsername']) : '';
     $signUPPassword = isset($_POST['signupPassword']) ? mysqli_real_escape_string($connection, $_POST['signupPassword']) : '';
@@ -66,7 +71,7 @@
 </div>
 
 <!-- Featured Recipe -->
-<!-- <section class="recipes">
+<section class="recipes">
   <h2>Featured Recipe</h2>
   <?php if ($featuredRecipe): ?>
     <div class="featured-recipe">
@@ -79,7 +84,7 @@
   <?php else: ?>
     <p>No recipes available to feature.</p>
   <?php endif; ?>
-</section> -->
+</section>
 
 <!-- Overlay for popups -->
 <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
