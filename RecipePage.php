@@ -1,5 +1,6 @@
 <?php
     include "./dbinfo.inc"; // Ensure this file contains DB credentials
+    include "./recipes.php"; // Include the recipes functions
 
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -11,42 +12,18 @@
         die("<p>Failed to connect to MySQL: " . mysqli_connect_error() . "</p>");
     }
 
+    $database = mysqli_select_db($connection, DB_DATABASE);
+
     // Get recipe ID from URL
-    $recipeId = isset($_GET['id']) ? intval($_GET['id']) : 1;
+    // $recipeQuery = GetRecipe($connection, $_GET['id']);
+    // if (!$recipeQuery) {
+    //     die("<p>Receipe not found.</p>");
+    // }
 
-    // Fetch recipe details
-    $recipeQuery = "SELECT * FROM recipes WHERE id = ?";
-    $stmt = mysqli_prepare($connection, $recipeQuery);
-    mysqli_stmt_bind_param($stmt, "i", $recipeId);
-    mysqli_stmt_execute($stmt);
-    $recipeResult = mysqli_stmt_get_result($stmt);
-    $recipe = mysqli_fetch_assoc($recipeResult);
+    // Fetch ingredients using 
+    //$ingredients = GetIngredients($connection, $_GET['id']);
 
-    if (!$recipe) {
-        die("<p>Recipe not found.</p>");
-    }
-
-    // Fetch ingredients
-    $ingredientQuery = "SELECT ingredient FROM ingredients WHERE recipe_id = ?";
-    $stmt = mysqli_prepare($connection, $ingredientQuery);
-    mysqli_stmt_bind_param($stmt, "i", $recipeId);
-    mysqli_stmt_execute($stmt);
-    $ingredientResult = mysqli_stmt_get_result($stmt);
-    $ingredients = [];
-    while ($row = mysqli_fetch_assoc($ingredientResult)) {
-        $ingredients[] = $row['ingredient'];
-    }
-
-    // Fetch instructions
-    $instructionQuery = "SELECT step FROM instructions WHERE recipe_id = ? ORDER BY step_number ASC";
-    $stmt = mysqli_prepare($connection, $instructionQuery);
-    mysqli_stmt_bind_param($stmt, "i", $recipeId);
-    mysqli_stmt_execute($stmt);
-    $instructionResult = mysqli_stmt_get_result($stmt);
-    $instructions = [];
-    while ($row = mysqli_fetch_assoc($instructionResult)) {
-        $instructions[] = $row['step'];
-    }
+    //$instructions = GetInstructions($connection, $_GET['id']);
 
     mysqli_close($connection);
 ?>
@@ -60,7 +37,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
     <!-- Navbar -->
     <div class="navbar">
         <a href="index.php" class="navbar-title">
@@ -116,6 +92,5 @@
             window.location.href = "RecipeList.php"; // Redirect to Recipe List
         }
     </script>
-
 </body>
 </html>
