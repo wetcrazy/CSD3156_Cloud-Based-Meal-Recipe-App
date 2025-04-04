@@ -19,7 +19,7 @@
 <?php
     $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
 
-    $featuredRecipe = GetRandomRecipe($connection);
+    // $featuredRecipe = GetRandomRecipe($connection);
 
     if (mysqli_connect_errno()) {
         echo "<p>Failed to connect to MySQL: " . mysqli_connect_error() . "</p>";
@@ -66,7 +66,7 @@
 </div>
 
 <!-- Featured Recipe -->
-<section class="recipes">
+<!-- <section class="recipes">
   <h2>Featured Recipe</h2>
   <?php if ($featuredRecipe): ?>
     <div class="featured-recipe">
@@ -79,7 +79,7 @@
   <?php else: ?>
     <p>No recipes available to feature.</p>
   <?php endif; ?>
-</section>
+</section> -->
 
 <!-- Overlay for popups -->
 <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
