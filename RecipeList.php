@@ -1,5 +1,6 @@
 <?php
     include "./dbinfo.inc"; // Database connection
+    include "./recipes.php"; // Include the recipes functions
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -22,42 +23,39 @@
     <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
     <script src="scripts.js"></script> <!-- Link to external JavaScript file -->
     <script>
+        const recipes = <?php echo json_encode($recipes); ?>;
+
         function bookmarkRecipe() {
             alert("Recipe saved!");
         }
 
         function goToRecipePage(recipeId) {
-            // Navigate to the recipe page with the specific recipe ID
-            // Replace 'RecipePage.html' with the actual URL structure for your recipe pages
             window.location.href = `RecipePage.php?id=${recipeId}`;
         }
 
-        
-
-        // Function to dynamically display recipes
         function displayRecipes() {
             const recipeList = document.querySelector(".recipe-list");
-            recipeList.innerHTML = ""; // Clear existing content
+            recipeList.innerHTML = "";
 
             recipes.forEach(recipe => {
                 const recipeDiv = document.createElement("div");
                 recipeDiv.classList.add("recipe");
 
                 recipeDiv.innerHTML = `
-                    <a href="javascript:void(0);" onclick="goToRecipePage(${recipe.id})" class="recipe-link">
+                    <a href="javascript:void(0);" onclick="goToRecipePage(${recipe.recipeID})" class="recipe-link">
                         <div class="recipe-box">
                             <div class="recipe-thumbnail">
-                                <img src="${recipe.thumbnail}" alt="${recipe.name} Thumbnail">
+                                <img src="${recipe.recipeImage}" alt="${recipe.recipeName} Thumbnail">
                             </div>
                             <div class="recipe-details">
-                                <h3 class="recipe-title">${recipe.name}</h3>
-                                <p class="recipe-description">${recipe.description}</p>
-                                <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.cookingTime}</p>
+                                <h3 class="recipe-title">${recipe.recipeName}</h3>
+                                <p class="recipe-description">${recipe.recipeDescription}</p>
+                                <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.recipeTime}</p>
                             </div>
                             <div class="recipe-actions">
-                            <?php if (isset($_SESSION['username'])): ?>
-                                <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe()">Bookmark</button>
-                            <?php endif; ?>
+                                <?php if (isset($_SESSION['username'])): ?>
+                                    <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe()">Bookmark</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </a>
@@ -66,9 +64,10 @@
                 recipeList.appendChild(recipeDiv);
             });
         }
-        // Call the function to display recipes when the page loads
+
         document.addEventListener("DOMContentLoaded", displayRecipes);
     </script>
+
 </head>
 <body>
     <!-- Navbar -->

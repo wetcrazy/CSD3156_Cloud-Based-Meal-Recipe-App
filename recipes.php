@@ -80,9 +80,25 @@ function GetUserRecipes($connection, $userName) {
 }
 
 function GetRandomRecipe($connection) {
-    $stmt = $connection->prepare("SELECT recipeID, recipeName, recipeDescription, recipeImage FROM RECIPES ORDER BY RAND() LIMIT 1");
-    $stmt->execute();
-    return $stmt->get_result()->fetch_assoc();
+    $sql = "SELECT recipeID, recipeName, recipeDescription, recipeImage FROM RECIPES ORDER BY RAND() LIMIT 1";
+    
+    if ($stmt = $connection->prepare($sql)) {
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        } else {
+            // Execution failed
+            error_log("Statement execution failed: " . $stmt->error);
+        }
+        $stmt->close();
+    } else {
+        // Prepare failed
+        error_log("Statement preparation failed: " . $connection->error);
+    }
+
+    return null;
 }
 
 function AddRecipeIngredient($connection, $recipeId, $ingredientId, $ingredientAmount) {
@@ -147,9 +163,26 @@ function VerifyIngredient($connection, $dbName) {
 
 // Function that pulls all the recipes from the database
 function GetAllRecipes($connection) {
-    $stmt = $connection->prepare("SELECT recipeID, recipeName, recipeDescription, recipeImage, recipeTime FROM RECIPES");
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $sql = "SELECT recipeID, recipeName, recipeDescription, recipeImage, recipeTime FROM RECIPES";
+    
+    if ($stmt = $connection->prepare($sql)) {
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_all(MYSQLI_ASSOC);
+            }
+        } else {
+            // Execution failed
+            error_log("GetAllRecipes() execution failed: " . $stmt->error);
+        }
+        $stmt->close();
+    } else {
+        // Preparation failed
+        error_log("GetAllRecipes() preparation failed: " . $connection->error);
+    }
+
+    return []; // Return empty array if nothing found or error occurred
 }
+
 ?>
 
