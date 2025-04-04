@@ -1,14 +1,62 @@
 <?php
+    include "./dbinfo.inc"; // Ensure this file contains DB credentials
+
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+
+    // Establish database connection
+    $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
+    if (!$connection) {
+        die("<p>Failed to connect to MySQL: " . mysqli_connect_error() . "</p>");
+    }
+
+    // Get recipe ID from URL
+    $recipeId = isset($_GET['id']) ? intval($_GET['id']) : 1;
+
+    // Fetch recipe details
+    $recipeQuery = "SELECT * FROM recipes WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $recipeQuery);
+    mysqli_stmt_bind_param($stmt, "i", $recipeId);
+    mysqli_stmt_execute($stmt);
+    $recipeResult = mysqli_stmt_get_result($stmt);
+    $recipe = mysqli_fetch_assoc($recipeResult);
+
+    if (!$recipe) {
+        die("<p>Recipe not found.</p>");
+    }
+
+    // Fetch ingredients
+    $ingredientQuery = "SELECT ingredient FROM ingredients WHERE recipe_id = ?";
+    $stmt = mysqli_prepare($connection, $ingredientQuery);
+    mysqli_stmt_bind_param($stmt, "i", $recipeId);
+    mysqli_stmt_execute($stmt);
+    $ingredientResult = mysqli_stmt_get_result($stmt);
+    $ingredients = [];
+    while ($row = mysqli_fetch_assoc($ingredientResult)) {
+        $ingredients[] = $row['ingredient'];
+    }
+
+    // Fetch instructions
+    $instructionQuery = "SELECT step FROM instructions WHERE recipe_id = ? ORDER BY step_number ASC";
+    $stmt = mysqli_prepare($connection, $instructionQuery);
+    mysqli_stmt_bind_param($stmt, "i", $recipeId);
+    mysqli_stmt_execute($stmt);
+    $instructionResult = mysqli_stmt_get_result($stmt);
+    $instructions = [];
+    while ($row = mysqli_fetch_assoc($instructionResult)) {
+        $instructions[] = $row['step'];
+    }
+
+    mysqli_close($connection);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Page</title>
+    <title><?php echo htmlspecialchars($recipe['name']); ?></title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,86 +80,41 @@
     <div class="container">
         <div class="recipe-header">
             <button class="back-button" onclick="goBack()">&larr;</button>
-            <h1 id="recipe-title">Loading...</h1>
+            <h1><?php echo htmlspecialchars($recipe['name']); ?></h1>
             <button id="bookmarkBtn" class="bookmark-btn">Bookmark</button>
         </div>
-        <p id="recipe-description">Fetching recipe details...</p>
+        <p><?php echo htmlspecialchars($recipe['description']); ?></p>
 
         <!-- Recipe Image -->
         <div class="recipe-images">
-            <img id="recipe-image" src="" alt="Recipe Image">
+            <img src="<?php echo htmlspecialchars($recipe['image_path']); ?>" alt="Recipe Image">
         </div>
 
         <!-- Ingredients Section -->
         <div class="recipe-section">
             <h2>Ingredients</h2>
-            <ul id="ingredients-list"></ul>
+            <ul>
+                <?php foreach ($ingredients as $ingredient): ?>
+                    <li><?php echo htmlspecialchars($ingredient); ?></li>
+                <?php endforeach; ?>
+            </ul>
         </div>
 
         <!-- Instructions Section -->
         <div class="recipe-section">
             <h2>Instructions</h2>
-            <ol id="instructions-list"></ol>
+            <ol>
+                <?php foreach ($instructions as $step): ?>
+                    <li><?php echo htmlspecialchars($step); ?></li>
+                <?php endforeach; ?>
+            </ol>
         </div>
     </div>
 
-    <!-- Overlay for popups -->
-    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
-
-    <!-- Login Popup -->
-    <div id="loginPopup" class="popup">
-        <span class="close" onclick="closePopup()">&times;</span>
-        <h2>Login</h2>
-        <input type="text" id="loginUsername" placeholder="Username">
-        <input type="password" id="loginPassword" placeholder="Password">
-        <button onclick="login()">Login</button>
-    </div>
-
-    <!-- Signup Popup -->
-    <div id="signupPopup" class="popup">
-        <span class="close" onclick="closePopup()">&times;</span>
-        <h2>Signup</h2>
-        <input type="text" id="signupUsername" placeholder="Username">
-        <input type="password" id="signupPassword" placeholder="Password">
-        <button onclick="signup()">Sign Up</button>
-    </div>
-
-    <script src="scripts.js"></script>
     <script>
-        const bookmarkBtn = document.getElementById("bookmarkBtn");
-        const recipeTitle = document.getElementById("recipe-title");
-        const recipeDescription = document.getElementById("recipe-description");
-        const recipeImage = document.getElementById("recipe-image");
-        const ingredientsList = document.getElementById("ingredients-list");
-        const instructionsList = document.getElementById("instructions-list");
-
-        async function fetchRecipe(recipeId) {
-            try {
-                // Fetch recipe from AWS RDS backend API
-                const response = await fetch(`http://3.86.67.125/api/recipes/${recipeId}`); // Replace with actual backend URL
-                const data = await response.json();
-
-                // Update UI with fetched data
-                recipeTitle.textContent = data.name;
-                recipeDescription.textContent = data.description;
-                recipeImage.src = data.image;
-                recipeImage.alt = data.name;
-
-                ingredientsList.innerHTML = data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('');
-                instructionsList.innerHTML = data.instructions.map(step => `<li>${step}</li>`).join('');
-            } catch (error) {
-                console.error("Error fetching recipe:", error);
-            }
-        }
-
         function goBack() {
-           window.location.href = "RecipeList.php"; // Redirect to Recipe List
+            window.location.href = "RecipeList.php"; // Redirect to Recipe List
         }
-
-        // Example: Fetch recipe with ID from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const recipeId = urlParams.get('id') || 1;
-        fetchRecipe(recipeId); // Fetch recipe on page load
     </script>
 
 </body>
