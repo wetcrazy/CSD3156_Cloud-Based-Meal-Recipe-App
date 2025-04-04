@@ -26,12 +26,12 @@
     $database = mysqli_select_db($connection, DB_DATABASE);
 
     $featuredRecipe = null;
-    // $randomRecipeQuery = "SELECT * FROM RECIPES ORDER BY RAND() LIMIT 1";
-    // $result = mysqli_query($connection, $randomRecipeQuery);
-    // if ($result && mysqli_num_rows($result) > 0) {
-    //     $featuredRecipe = mysqli_fetch_assoc($result);
-    // }
-    $featuredRecipe = GetRandomRecipe($connection);
+    $randomRecipeQuery = "SELECT * FROM RECIPES ORDER BY RAND() LIMIT 1";
+    $result = mysqli_query($connection, $randomRecipeQuery);
+    if ($result && mysqli_num_rows($result) > 0) {
+        $featuredRecipe = mysqli_fetch_assoc($result);
+    }
+    //$featuredRecipe = GetRandomRecipe($connection);
 
     $signUpName = isset($_POST['signupUsername']) ? mysqli_real_escape_string($connection, $_POST['signupUsername']) : '';
     $signUPPassword = isset($_POST['signupPassword']) ? mysqli_real_escape_string($connection, $_POST['signupPassword']) : '';
