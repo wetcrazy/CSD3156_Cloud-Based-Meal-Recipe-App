@@ -6,8 +6,7 @@ USE recipe;
 CREATE TABLE IF NOT EXISTS USERS (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     userName VARCHAR(50) NOT NULL UNIQUE,
-    userPassword VARCHAR(255) NOT NULL,
-    userBookmarkedRecipes TEXT
+    userPassword VARCHAR(255) NOT NULL
 );
 
 -- Create the RECIPES table
@@ -19,7 +18,6 @@ CREATE TABLE IF NOT EXISTS RECIPES (
     recipeTime INT NOT NULL,
     recipeSteps TEXT NOT NULL,
     userName VARCHAR(50) NOT NULL,
-    recipeIngredients TEXT NOT NULL,
     FOREIGN KEY (userName) REFERENCES USERS(userName) ON DELETE CASCADE
 );
 
@@ -29,3 +27,23 @@ CREATE TABLE IF NOT EXISTS INGREDIENTS (
     ingredientName VARCHAR(50) NOT NULL,
     ingredientUnit VARCHAR(50) NOT NULL
 );
+
+-- Create the BOOKMARKS table to link USERS to RECIPES they bookmarked
+CREATE TABLE IF NOT EXISTS BOOKMARKS (
+    bookmarkID INT AUTO_INCREMENT PRIMARY KEY,
+    userID INT,
+    recipeID INT,
+    FOREIGN KEY (userID) REFERENCES USERS(userID) ON DELETE CASCADE,
+    FOREIGN KEY (recipeID) REFERENCES RECIPES(recipeID) ON DELETE CASCADE
+);
+
+-- Create the RECIPE_INGREDIENTS table to link RECIPES with INGREDIENTS and the quantity used
+CREATE TABLE IF NOT EXISTS RECIPE_INGREDIENTS (
+    recipeID INT,
+    ingredientID INT,
+    ingredientAmount DECIMAL(10, 2),
+    PRIMARY KEY (recipeID, ingredientID),
+    FOREIGN KEY (recipeID) REFERENCES RECIPES(recipeID) ON DELETE CASCADE,
+    FOREIGN KEY (ingredientID) REFERENCES INGREDIENTS(ingredientID) ON DELETE CASCADE
+);
+
