@@ -1,42 +1,68 @@
 <?php
-include "./dbinfo.inc"; 
+include "./dbinfo.inc";
 session_start();
 
 $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
 if (mysqli_connect_errno()) {
-    die("<p>Failed to connect to MySQL: " . mysqli_connect_error() . "</p>");
+    die(json_encode(["error" => "Failed to connect to MySQL: " . mysqli_connect_error()]));
 }
 mysqli_select_db($connection, DB_DATABASE);
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username'])) {
+if (isset($_POST['action']) && $_POST['action'] === 'addIngredient') {
+    $name = mysqli_real_escape_string($connection, $_POST['ingredientName']);
+    $unit = mysqli_real_escape_string($connection, $_POST['ingredientUnit']);
+
+    $query = "INSERT INTO INGREDIENTS (ingredientName, ingredientUnit) VALUES ('$name', '$unit')";
+    if (mysqli_query($connection, $query)) {
+        $id = mysqli_insert_id($connection);
+        echo json_encode([
+            'success' => true,
+            'id' => $id,
+            'name' => $name,
+            'unit' => $unit
+        ]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Insert failed']);
+    }
+    exit;
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'getIngredients') {
+    $result = mysqli_query($connection, "SELECT ingredientID, ingredientName, ingredientUnit FROM INGREDIENTS");
+    $ingredients = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $ingredients[] = $row;
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($ingredients);
+    exit;
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !isset($_POST['action'])) {
     $recipeName = mysqli_real_escape_string($connection, $_POST['recipeName']);
     $recipeDescription = mysqli_real_escape_string($connection, $_POST['recipeDescription']);
     $recipeTime = (int) $_POST['recipeTimeTaken'];
     $recipeSteps = mysqli_real_escape_string($connection, $_POST['recipeSteps']);
     $userName = $_SESSION['username'];
 
-    // Handle image upload
     $imagePath = '';
     if (isset($_FILES['recipeImage']) && $_FILES['recipeImage']['error'] === UPLOAD_ERR_OK) {
-      $imagePath = 'images/placeholder.jpg';
+        $imagePath = 'images/placeholder.jpg'; // Placeholder logic
     }
 
-    // Insert into RECIPES table
     $insertRecipe = "INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName)
                      VALUES ('$recipeName', '$recipeDescription', '$imagePath', $recipeTime, '$recipeSteps', '$userName')";
 
     if (mysqli_query($connection, $insertRecipe)) {
         $recipeID = mysqli_insert_id($connection);
-
-        // Handle ingredients
         $ingredientIDs = $_POST['ingredient_ids'];
         $quantities = $_POST['quantities'];
 
         for ($i = 0; $i < count($ingredientIDs); $i++) {
             $ingredientID = (int) $ingredientIDs[$i];
             $amount = floatval($quantities[$i]);
-
             $insertIngredient = "INSERT INTO RECIPE_INGREDIENTS (recipeID, ingredientID, ingredientAmount)
                                  VALUES ($recipeID, $ingredientID, $amount)";
             mysqli_query($connection, $insertIngredient);
@@ -47,27 +73,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username'])) {
         echo "<script>alert('Error saving recipe.');</script>";
     }
 }
-
-if (
-  $_SERVER["REQUEST_METHOD"] === "POST" &&
-  isset($_POST['formType']) && 
-  $_POST['formType'] === "addIngredient"
-) {
-  $ingredientName = mysqli_real_escape_string($connection, $_POST['ingredientName']);
-  $ingredientUnit = mysqli_real_escape_string($connection, $_POST['ingredientUnit']);
-
-  if (!empty($ingredientName) && !empty($ingredientUnit)) {
-      $insertIngredient = "INSERT INTO INGREDIENTS (ingredientName, ingredientUnit)
-                           VALUES ('$ingredientName', '$ingredientUnit')";
-      if (mysqli_query($connection, $insertIngredient)) {
-          echo "<script>alert('Ingredient added successfully.'); window.location.href = 'CreateRecipe.php';</script>";
-          exit;
-      } else {
-          echo "<script>alert('Failed to add ingredient.');</script>";
-      }
-  }
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -126,7 +131,15 @@ if (
       </div>
 
       <button type="button" class="submit-btn" onclick="addIngredient()">+ Add Ingredient</button>
-      <button type="button" class="submit-btn" onclick="showAddIngredientModal()">+ Add New Ingredient</button>
+
+      <hr>
+      <h3>Add New Ingredient</h3>
+      <div id="new-ingredient-form">
+        <input type="text" id="newIngredientName" placeholder="Ingredient Name" required>
+        <input type="text" id="newIngredientUnit" placeholder="Unit (e.g. grams, cups)" required>
+        <button type="button" onclick="addNewIngredient()">Add Ingredient</button>
+      </div>
+      <p id="add-ingredient-message"></p>
 
       <label for="recipeImage">Upload Image:</label>
       <input type="file" name="recipeImage" accept="image/*" required>
@@ -134,19 +147,6 @@ if (
       <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
   </div>
-  <!-- Add Ingredient Modal -->
-  <div class="popup-overlay" id="popupOverlay" onclick="hideAddIngredientModal()"></div>
-  <div class="popup" id="addIngredientModal">
-    <form action="CreateRecipe.php" method="POST">
-      <input type="hidden" name="formType" value="addIngredient">
-      <h3>Add New Ingredient</h3>
-      <input type="text" name="ingredientName" placeholder="Ingredient Name" required>
-      <input type="text" name="ingredientUnit" placeholder="Unit (e.g. grams)" required>
-      <button type="submit" class="submit-btn">Add Ingredient</button>
-      <button type="button" class="remove-btn" onclick="hideAddIngredientModal()">Cancel</button>
-    </form>
-  </div>
-
 <?php else: ?>
   <div class="create-recipe-form">
     <p><strong>You must be logged in to create a recipe.</strong></p>
@@ -156,41 +156,74 @@ if (
 
 <script>
 function addIngredient() {
-  const list = document.getElementById('ingredient-list');
-  const newGroup = document.createElement('div');
-  newGroup.className = 'ingredient-group';
+  fetch('CreateRecipe.php?action=getIngredients')
+    .then(response => response.json())
+    .then(ingredients => {
+      const list = document.getElementById('ingredient-list');
+      const newGroup = document.createElement('div');
+      newGroup.className = 'ingredient-group';
 
-  const dropdown = `
-    <select name="ingredient_ids[]" required>
-      <option value="">-- Select Ingredient --</option>
-      <?php
-        $result = mysqli_query($connection, "SELECT ingredientID, ingredientName, ingredientUnit FROM INGREDIENTS");
-        while ($row = mysqli_fetch_assoc($result)) {
-          echo "<option value='{$row['ingredientID']}'>{$row['ingredientName']} ({$row['ingredientUnit']})</option>";
-        }
-      ?>
-    </select>`;
+      let dropdown = `<select name="ingredient_ids[]" required>
+                        <option value="">-- Select Ingredient --</option>`;
+      ingredients.forEach(ing => {
+        dropdown += `<option value="${ing.ingredientID}">${ing.ingredientName} (${ing.ingredientUnit})</option>`;
+      });
+      dropdown += `</select>`;
 
-  newGroup.innerHTML = `
-    ${dropdown}
-    <input type="text" name="quantities[]" placeholder="e.g. 1.5" required>
-    <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
-  `;
-  list.appendChild(newGroup);
+      newGroup.innerHTML = `
+        ${dropdown}
+        <input type="text" name="quantities[]" placeholder="e.g. 1.5" required>
+        <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
+      `;
+      list.appendChild(newGroup);
+    });
 }
 
 function removeIngredient(btn) {
   btn.parentElement.remove();
 }
 
-function showAddIngredientModal() {
-  document.getElementById("addIngredientModal").style.display = "block";
-  document.getElementById("popupOverlay").style.display = "block";
+function addNewIngredient() {
+  const name = document.getElementById('newIngredientName').value.trim();
+  const unit = document.getElementById('newIngredientUnit').value.trim();
+  const msg = document.getElementById('add-ingredient-message');
+
+  if (!name || !unit) {
+    msg.textContent = "Please enter both name and unit.";
+    return;
+  }
+
+  const formData = new URLSearchParams();
+  formData.append('action', 'addIngredient');
+  formData.append('ingredientName', name);
+  formData.append('ingredientUnit', unit);
+
+  fetch('CreateRecipe.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      msg.textContent = "Ingredient added!";
+      document.getElementById('newIngredientName').value = '';
+      document.getElementById('newIngredientUnit').value = '';
+      updateAllDropdowns(data.id, data.name, data.unit);
+    } else {
+      msg.textContent = "Failed to add ingredient.";
+    }
+  });
 }
 
-function hideAddIngredientModal() {
-  document.getElementById("addIngredientModal").style.display = "none";
-  document.getElementById("popupOverlay").style.display = "none";
+function updateAllDropdowns(newId, newName, newUnit) {
+  const dropdowns = document.querySelectorAll('select[name="ingredient_ids[]"]');
+  dropdowns.forEach(dropdown => {
+    const option = document.createElement('option');
+    option.value = newId;
+    option.textContent = `${newName} (${newUnit})`;
+    dropdown.appendChild(option);
+  });
 }
 </script>
 
