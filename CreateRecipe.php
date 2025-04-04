@@ -133,12 +133,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
       <button type="button" class="submit-btn" onclick="addIngredient()">+ Add Ingredient</button>
 
       <hr>
-      <h3>Add New Ingredient</h3>
-      <div id="new-ingredient-form">
-        <input type="text" id="newIngredientName" placeholder="Ingredient Name" required>
-        <input type="text" id="newIngredientUnit" placeholder="Unit (e.g. grams, cups)" required>
-        <button type="button" onclick="addNewIngredient()">Add Ingredient</button>
-      </div>
+      <!-- Modal Trigger Button -->
+      <button type="button" class="submit-btn" onclick="openPopup()">Add New Ingredient</button>
+
       <p id="add-ingredient-message"></p>
 
       <label for="recipeImage">Upload Image:</label>
@@ -153,6 +150,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
     <a href="index.php"><button class="submit-btn">Go to Home / Login</button></a>
   </div>
 <?php endif; ?>
+
+<!-- Popup Modal -->
+<div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+<div class="popup" id="ingredientPopup">
+  <span class="close" onclick="closePopup()">×</span>
+  <h3>Add New Ingredient</h3>
+  <input type="text" id="newIngredientName" placeholder="Ingredient Name" required>
+  <input type="text" id="newIngredientUnit" placeholder="Unit (e.g. grams, cups)" required>
+  <button type="button" class="submit-btn" onclick="addNewIngredient()">Add Ingredient</button>
+  <p id="add-ingredient-message"></p>
+</div>
 
 <script>
 function addIngredient() {
@@ -224,6 +232,16 @@ function updateAllDropdowns(newId, newName, newUnit) {
     option.textContent = `${newName} (${newUnit})`;
     dropdown.appendChild(option);
   });
+}
+
+function openPopup() {
+  document.getElementById('popupOverlay').style.display = 'block';
+  document.getElementById('ingredientPopup').style.display = 'block';
+}
+
+function closePopup() {
+  document.getElementById('popupOverlay').style.display = 'none';
+  document.getElementById('ingredientPopup').style.display = 'none';
 }
 </script>
 
