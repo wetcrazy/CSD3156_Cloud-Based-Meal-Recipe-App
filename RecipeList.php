@@ -84,19 +84,6 @@
     </script>
 </head>
 <body>
-    <div class="navbar">
-        <a href="index.php" class="navbar-title">
-            <h1>Online Cookbook</h1>
-        </a>
-        <div class="nav-links">
-            <?php if (!isset($_SESSION['username'])): ?>
-                <button onclick="openPopup('loginPopup')">Login</button>
-                <button onclick="openPopup('signupPopup')">Signup</button>
-            <?php else: ?>
-                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
-            <?php endif; ?>
-        </div>
-    </div>
     <!-- Overlay for popups -->
     <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
 
@@ -121,6 +108,21 @@
         <button type="submit">Login</button>
     </form>
     </div>
+    
+    <div class="navbar">
+        <a href="index.php" class="navbar-title">
+            <h1>Online Cookbook</h1>
+        </a>
+        <div class="nav-links">
+            <?php if (!isset($_SESSION['username'])): ?>
+                <button onclick="openPopup('loginPopup')">Login</button>
+                <button onclick="openPopup('signupPopup')">Signup</button>
+            <?php else: ?>
+                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+            <?php endif; ?>
+        </div>
+    </div>
+
     <div class="container">
         <div class="search-bar">
             <input type="text" placeholder="Search for recipes..." class="search-input">
