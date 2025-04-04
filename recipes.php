@@ -144,4 +144,12 @@ function VerifyIngredient($connection, $dbName) {
         mysqli_query($connection, $query);
     }
 }
+
+// Function that pulls all the recipes from the database
+function GetAllRecipes($connection) {
+    $stmt = $connection->prepare("SELECT recipeID, recipeName, recipeDescription, recipeImage, recipeTime FROM RECIPES");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
 ?>
+
