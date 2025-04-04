@@ -31,6 +31,7 @@
     if ($result && mysqli_num_rows($result) > 0) {
         $featuredRecipe = mysqli_fetch_assoc($result);
     }
+    //$featuredRecipe = GetRandomRecipe($connection);
 
     $signUpName = isset($_POST['signupUsername']) ? mysqli_real_escape_string($connection, $_POST['signupUsername']) : '';
     $signUPPassword = isset($_POST['signupPassword']) ? mysqli_real_escape_string($connection, $_POST['signupPassword']) : '';
