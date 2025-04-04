@@ -8,6 +8,13 @@ if (mysqli_connect_errno()) {
 }
 mysqli_select_db($connection, DB_DATABASE);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'logout') {
+  session_unset();
+  session_destroy();
+  header("Location: index.php");
+  exit();
+}
+
 if (isset($_POST['action']) && $_POST['action'] === 'addIngredient') {
     $name = mysqli_real_escape_string($connection, $_POST['ingredientName']);
     $unit = mysqli_real_escape_string($connection, $_POST['ingredientUnit']);
@@ -93,7 +100,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
       <button onclick="location.href='index.php'">Login</button>
     <?php else: ?>
       <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
-      <a href="logout.php"><button>Logout</button></a>
+      <form method="POST" style="display:inline;">
+        <input type="hidden" name="action" value="logout">
+        <button type="submit">Logout</button>
+      </form>
     <?php endif; ?>
   </div>
 </div>
