@@ -1,6 +1,7 @@
 <?php 
   include "./dbinfo.inc"; 
   include "./recipes.php"; // Include the recipes functions
+
   if (session_status() === PHP_SESSION_NONE) {
     session_start();
   }
@@ -17,6 +18,8 @@
 
 <?php
     $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
+
+    $featuredRecipe = GetRandomRecipe($connection);
 
     if (mysqli_connect_errno()) {
         echo "<p>Failed to connect to MySQL: " . mysqli_connect_error() . "</p>";
@@ -65,13 +68,17 @@
 <!-- Featured Recipe -->
 <section class="recipes">
   <h2>Featured Recipe</h2>
-  <div class="featured-recipe">
-    <div class="recipe-card" id="recipe-card" onclick="goToRecipePage()">
-      <img id="recipe-image" src="" alt="Recipe Image">
-      <h3 id="recipe-name"></h3>
-      <p id="recipe-desc"></p>
+  <?php if ($featuredRecipe): ?>
+    <div class="featured-recipe">
+      <div class="recipe-card" onclick="window.location.href='RecipePage.php?id=<?php echo $featuredRecipe['recipeID']; ?>'">
+        <img src="<?php echo htmlspecialchars($featuredRecipe['recipeImage']); ?>" alt="<?php echo htmlspecialchars($featuredRecipe['recipeName']); ?>">
+        <h3><?php echo htmlspecialchars($featuredRecipe['recipeName']); ?></h3>
+        <p><?php echo htmlspecialchars($featuredRecipe['recipeDescription']); ?></p>
+      </div>
     </div>
-  </div>
+  <?php else: ?>
+    <p>No recipes available to feature.</p>
+  <?php endif; ?>
 </section>
 
 <!-- Overlay for popups -->
@@ -102,25 +109,6 @@
 <script src="scripts.js"></script>
 <script>
   let recipeId;
-
-  async function fetchRandomRecipe() {
-    try {
-      const response = await fetch('/random-recipe');
-      const recipe = await response.json();
-      recipeId = recipe.id;
-      document.getElementById('recipe-name').innerText = recipe.name;
-      document.getElementById('recipe-desc').innerText = recipe.description;
-      document.getElementById('recipe-image').src = recipe.image_url;
-      document.getElementById('recipe-image').alt = recipe.name;
-    } catch (error) {
-      console.error('Error fetching recipe:', error);
-      recipeId = 'Error_fetching_recipe_ID';
-      document.getElementById('recipe-name').innerText = 'Error fetching recipe name';
-      document.getElementById('recipe-desc').innerText = 'Error fetching recipe description';
-      document.getElementById('recipe-image').src = '';
-      document.getElementById('recipe-image').alt = 'Error fetching image alt text';
-    }
-  }
 
   window.onload = fetchRandomRecipe;
 
