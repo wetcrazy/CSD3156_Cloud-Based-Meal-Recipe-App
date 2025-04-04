@@ -1,4 +1,8 @@
-<?php session_start(); ?>
+<?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +83,7 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="Index.php" class="navbar-title">
+        <a href="index.php" class="navbar-title">
             <h1>Online Cookbook</h1>
         </a>
         <div class="nav-links">
@@ -97,8 +101,10 @@
             <button class="search-btn">Search</button>
         </div>
         <div class="links">
+        <?php if (isset($_SESSION['username'])): ?>
             <button class="nav-btn" onclick="window.location.href='CreateRecipe.html'">Create Recipe</button>
             <button class="nav-btn" onclick="window.location.href='BookmarkedRecipes.html'">View Bookmarked Recipes</button>
+        <?php endif; ?>
         </div>
         <div class="recipe-list">
             <!-- Recipes will be dynamically loaded here -->

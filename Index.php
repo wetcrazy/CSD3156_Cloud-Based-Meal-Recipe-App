@@ -1,6 +1,9 @@
 <?php 
-include "./dbinfo.inc"; 
-include "./recipes.php"; // Include the recipes functions
+  include "./dbinfo.inc"; 
+  include "./recipes.php"; // Include the recipes functions
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
