@@ -1,4 +1,5 @@
 <?php
+    include "./dbinfo.inc"; // Database connection
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -21,6 +22,11 @@
             // Replace 'RecipePage.html' with the actual URL structure for your recipe pages
             window.location.href = `RecipePage.php?id=${recipeId}`;
         }
+
+        // Example recipes array (replace this with data fetched from your database or API)
+        $recipes = GetAllRecipes($connection);
+        // Establish database connection
+        $connection = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD); 
 
         // Function to dynamically display recipes
         function displayRecipes() {
@@ -54,32 +60,6 @@
                 recipeList.appendChild(recipeDiv);
             });
         }
-
-        // Example recipes array (replace this with data fetched from your database or API)
-        const recipes = [
-            {
-                id: 1,
-                name: "Spaghetti Bolognese",
-                description: "A classic Italian pasta dish with rich meat sauce.",
-                cookingTime: "45 minutes",
-                thumbnail: "spaghetti.jpg"
-            },
-            {
-                id: 2,
-                name: "Chicken Curry",
-                description: "A flavorful curry with tender chicken pieces.",
-                cookingTime: "60 minutes",
-                thumbnail: "chicken-curry.jpg"
-            },
-            {
-                id: 3,
-                name: "Vegetable Stir Fry",
-                description: "A quick and healthy stir fry with fresh vegetables.",
-                cookingTime: "20 minutes",
-                thumbnail: "stir-fry.jpg"
-            }
-        ];
-
         // Call the function to display recipes when the page loads
         document.addEventListener("DOMContentLoaded", displayRecipes);
     </script>
