@@ -44,10 +44,13 @@ include "./recipes.php"; // Include the recipes functions
     <h1>Online Cookbook</h1>
   </a>
   <div class="nav-links">
-  <?php if (!isset($_SESSION['username'])): ?>
-    <button onclick="openPopup('loginPopup')">Login</button>
-    <button onclick="openPopup('signupPopup')">Signup</button>
+    <?php if (!isset($_SESSION['username'])): ?>
+      <button onclick="openPopup('loginPopup')">Login</button>
+      <button onclick="openPopup('signupPopup')">Signup</button>
+    <?php endif; ?> <!-- Properly closing the if statement -->
+  </div>
 </div>
+
 
 <!-- Hero Section -->
 <div class="hero">
