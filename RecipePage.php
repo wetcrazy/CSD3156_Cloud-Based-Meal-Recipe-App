@@ -80,7 +80,7 @@
             <button class="back-button" onclick="goBack()">&larr;</button>
             <h1><?php echo htmlspecialchars($recipe['recipeName']); ?></h1>
             <?php if (isset($_SESSION['username'])): ?>
-                <button class="bookmark-button" onclick="bookmarkRecipe(<?php echo $recipeId; ?>)">Bookmark</button>
+                <button class="bookmark-btn" onclick="bookmarkRecipe(<?php echo $recipeId; ?>)">Bookmark</button>
             <?php endif; ?>
         </div>
         <p><?php echo htmlspecialchars($recipe['recipeDescription']); ?></p>
