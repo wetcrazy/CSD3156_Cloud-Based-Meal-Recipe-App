@@ -55,8 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
     $userName = $_SESSION['username'];
 
     $imagePath = '';
-    if (!empty($_POST['imageURL'])) {
-      $imagePath = mysqli_real_escape_string($connection, $_POST['imageURL']);
+    if (!empty($_POST['uploadedImageUrl'])) {
+      $imagePath = mysqli_real_escape_string($connection, $_POST['uploadedImageUrl']);
     }
 
     $insertRecipe = "INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName)
@@ -149,11 +149,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
       <p id="add-ingredient-message"></p>
 
       <label for="recipeImage">Upload Image:</label>
-      <input type="file" id="recipeImage" accept="image/*" required>
-      <input type="hidden" name="imageURL" id="imageURL" required>
-      <button type="button" class="submit-btn" onclick="uploadImageToS3()">Upload Image</button>
+      <input type="file" name="recipeImage" accept="image/*" required>
+      <input type="hidden" name="uploadedImageUrl" id="uploadedImageUrl">
 
-      <button type="submit" class="submit-btn">Create Recipe</button>
+      <button type="submit" class="submit-btn" onclick="handleImageUploadAndSubmit()">Create Recipe</button>
     </form>
   </div>
 <?php else: ?>
@@ -256,49 +255,52 @@ function closePopup() {
   document.getElementById('ingredientPopup').style.display = 'none';
 }
 
-async function uploadImageToS3() {
-    const fileInput = document.getElementById('recipeImage');
-    const file = fileInput.files[0];
+async function handleImageUploadAndSubmit() {
+  const fileInput = document.querySelector('input[name="recipeImage"]');
+  const file = fileInput.files[0];
 
-    if (!file) {
-        alert("Please select an image file.");
-        return;
-    }
+  if (!file) {
+    alert("Please select an image.");
+    return;
+  }
 
-    // Step 1: Get presigned URL from your backend
+  try {
+    // 1. Request presigned URL
     const response = await fetch('http://FoodRecipeWebServerELB-602491882.us-east-1.elb.amazonaws.com:3000/generate-presigned-url', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            filename: file.name,
-            filetype: file.type
-        })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name,
+        filetype: file.type
+      })
     });
 
-    if (!response.ok) {
-        alert("Failed to generate upload URL.");
-        return;
-    }
+    if (!response.ok) throw new Error('Could not get presigned URL');
 
     const data = await response.json();
     const presignedUrl = data.url;
-    const s3URL = presignedUrl.split('?')[0]; // Strip query params for public access
 
-    // Step 2: Upload file to S3
-    const uploadRes = await fetch(presignedUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file
+    // 2. Upload image to S3
+    const uploadResponse = await fetch(presignedUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': file.type
+      },
+      body: file
     });
 
-    if (uploadRes.ok) {
-        document.getElementById('imageURL').value = s3URL;
-        alert("Image uploaded successfully!");
-    } else {
-        alert("Failed to upload image to S3.");
-    }
+    if (!uploadResponse.ok) throw new Error('Image upload failed');
+
+    // 3. Extract public S3 URL (without query params)
+    const imageUrl = presignedUrl.split('?')[0];
+    document.getElementById('uploadedImageUrl').value = imageUrl;
+
+    // 4. Submit the form now that image is uploaded
+    document.querySelector('form').submit();
+
+  } catch (error) {
+    alert('Image upload failed: ' + error.message);
+  }
 }
 </script>
 
