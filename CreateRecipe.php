@@ -181,18 +181,18 @@ function addIngredient() {
       const newGroup = document.createElement('div');
       newGroup.className = 'ingredient-group';
 
-      let dropdown = <select name="ingredient_ids[]" required>
-                        <option value="">-- Select Ingredient --</option>;
+      let dropdown = `<select name="ingredient_ids[]" required>
+                        <option value="">-- Select Ingredient --</option>`;
       ingredients.forEach(ing => {
-        dropdown += <option value="${ing.ingredientID}">${ing.ingredientName} (${ing.ingredientUnit})</option>;
+        dropdown += `<option value="${ing.ingredientID}">${ing.ingredientName} (${ing.ingredientUnit})</option>`;
       });
-      dropdown += </select>;
+      dropdown += `</select>`;
 
-      newGroup.innerHTML = 
+      newGroup.innerHTML = `
         ${dropdown}
         <input type="text" name="quantities[]" placeholder="e.g. 1.5" required>
         <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
-      ;
+      `;
       list.appendChild(newGroup);
     });
 }
@@ -239,7 +239,7 @@ function updateAllDropdowns(newId, newName, newUnit) {
   dropdowns.forEach(dropdown => {
     const option = document.createElement('option');
     option.value = newId;
-    option.textContent = ${newName} (${newUnit});
+    option.textContent = `${newName} (${newUnit})`;
     dropdown.appendChild(option);
   });
 }
