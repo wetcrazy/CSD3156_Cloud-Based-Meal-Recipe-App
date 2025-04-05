@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image to S3</title>
+</head>
+<body>
+    <h2>Upload an Image to S3</h2>
+
+    <!-- File Input Form -->
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="uploadButton">Upload Image</button>
+
+    <p id="status"></p>
+
+    <script>
+        // Wait for the user to select a file and click "Upload"
+        document.getElementById('uploadButton').addEventListener('click', async function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            // Send a request to your backend (ELB URL or EC2 URL) to generate the presigned URL
+            const response = await fetch('http://FoodRecipeWebServerELB-602491882.us-east-1.elb.amazonaws.com:3000/generate-presigned-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    filename: file.name,
+                    filetype: file.type
+                })
+            });
+
+            if (!response.ok) {
+                document.getElementById('status').innerText = 'Error generating presigned URL';
+                return;
+            }
+
+            const data = await response.json();
+            const presignedUrl = data.url;
+
+            // Upload the file to S3 using the presigned URL
+            const uploadResponse = await fetch(presignedUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: file
+            });
+
+            if (uploadResponse.ok) {
+                document.getElementById('status').innerText = 'Upload successful!';
+            } else {
+                document.getElementById('status').innerText = 'Error uploading file.';
+            }
+        });
+    </script>
+</body>
+</html>
