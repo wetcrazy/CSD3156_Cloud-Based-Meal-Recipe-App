@@ -55,8 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
     $userName = $_SESSION['username'];
 
     $imagePath = '';
-    if (isset($_FILES['recipeImage']) && $_FILES['recipeImage']['error'] === UPLOAD_ERR_OK) {
-        $imagePath = 'images/placeholder.jpg'; // Placeholder logic
+    if (isset($_POST['imagePath']) && !empty($_POST['imagePath'])) {
+      $imagePath = mysqli_real_escape_string($connection, $_POST['imagePath']);
     }
 
     $insertRecipe = "INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName)
@@ -150,10 +150,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
 
       <label for="recipeImage">Upload Image:</label>
       <input type="file" id="fileInput" accept="image/*">
-      <button id="uploadButton">Upload Image</button>
+      <input type="hidden" name="imagePath" id="imagePath">
+      <button type="submit" class="submit-btn" id="uploadButton">Create Recipe</button>
       <p id="status"></p>
-
-      <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
   </div>
 <?php else: ?>
@@ -297,6 +296,8 @@ document.getElementById('uploadButton').addEventListener('click', async function
 
             if (uploadResponse.ok) {
                 document.getElementById('status').innerText = 'Upload successful!';
+                const baseUrl = presignedUrl.split('?')[0];
+                document.getElementById('imagePath').value = baseUrl;
             } else {
                 document.getElementById('status').innerText = 'Error uploading file.';
             }
