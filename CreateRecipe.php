@@ -55,8 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
     $userName = $_SESSION['username'];
 
     $imagePath = '';
-    if (!empty($_POST['uploadedImageUrl'])) {
-      $imagePath = mysqli_real_escape_string($connection, $_POST['uploadedImageUrl']);
+    if (isset($_FILES['recipeImage']) && $_FILES['recipeImage']['error'] === UPLOAD_ERR_OK) {
+        $imagePath = 'images/placeholder.jpg'; // Placeholder logic
     }
 
     $insertRecipe = "INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName)
@@ -150,9 +150,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
 
       <label for="recipeImage">Upload Image:</label>
       <input type="file" name="recipeImage" accept="image/*" required>
-      <input type="hidden" name="uploadedImageUrl" id="uploadedImageUrl">
 
-      <button type="submit" class="submit-btn" onclick="handleImageUploadAndSubmit()">Create Recipe</button>
+      <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
   </div>
 <?php else: ?>
@@ -253,54 +252,6 @@ function openPopup() {
 function closePopup() {
   document.getElementById('popupOverlay').style.display = 'none';
   document.getElementById('ingredientPopup').style.display = 'none';
-}
-
-async function handleImageUploadAndSubmit() {
-  const fileInput = document.querySelector('input[name="recipeImage"]');
-  const file = fileInput.files[0];
-
-  if (!file) {
-    alert("Please select an image.");
-    return;
-  }
-
-  try {
-    // 1. Request presigned URL
-    const response = await fetch('http://FoodRecipeWebServerELB-602491882.us-east-1.elb.amazonaws.com:3000/generate-presigned-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        filename: file.name,
-        filetype: file.type
-      })
-    });
-
-    if (!response.ok) throw new Error('Could not get presigned URL');
-
-    const data = await response.json();
-    const presignedUrl = data.url;
-
-    // 2. Upload image to S3
-    const uploadResponse = await fetch(presignedUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': file.type
-      },
-      body: file
-    });
-
-    if (!uploadResponse.ok) throw new Error('Image upload failed');
-
-    // 3. Extract public S3 URL (without query params)
-    const imageUrl = presignedUrl.split('?')[0];
-    document.getElementById('uploadedImageUrl').value = imageUrl;
-
-    // 4. Submit the form now that image is uploaded
-    document.querySelector('form').submit();
-
-  } catch (error) {
-    alert('Image upload failed: ' + error.message);
-  }
 }
 </script>
 
