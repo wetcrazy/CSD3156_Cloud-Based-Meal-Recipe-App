@@ -13,6 +13,22 @@
     mysqli_select_db($connection, DB_DATABASE);
     // Example recipes array (replace this with data fetched from your database or API)
     $recipes = GetAllRecipes($connection);
+
+    $signUpName = isset($_POST['signupUsername']) ? mysqli_real_escape_string($connection, $_POST['signupUsername']) : '';
+    $signUPPassword = isset($_POST['signupPassword']) ? mysqli_real_escape_string($connection, $_POST['signupPassword']) : '';
+    
+    $loginName = isset($_POST['loginUsername']) ? mysqli_real_escape_string($connection, $_POST['loginUsername']) : '';
+    $loginPassword = isset($_POST['loginPassword']) ? mysqli_real_escape_string($connection, $_POST['loginPassword']) : '';
+    
+    if (strlen($signUpName) || strlen($signUPPassword)) {
+        $signUpResult = SignUp($connection, $signUpName, $signUPPassword);
+        echo "<script>alert('$signUpResult');</script>";
+    }
+
+    if (strlen($loginName) || strlen($loginPassword)) {
+        $loginResult = Login($connection, $loginName, $loginPassword);
+        echo "<script>alert('$loginResult');</script>";
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,22 +175,26 @@
     <!-- Overlay for popups -->
     <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
 
-    <!-- Login Popup -->
-    <div id="loginPopup" class="popup">
-        <span class="close" onclick="closePopup()">&times;</span>
-        <h2>Login</h2>
-        <input type="text" id="loginUsername" placeholder="Username">
-        <input type="password" id="loginPassword" placeholder="Password">
-        <button onclick="login()">Login</button>
-    </div>
-
     <!-- Signup Popup -->
     <div id="signupPopup" class="popup">
-        <span class="close" onclick="closePopup()">&times;</span>
-        <h2>Signup</h2>
-        <input type="text" id="signupUsername" placeholder="Username">
-        <input type="password" id="signupPassword" placeholder="Password">
-        <button onclick="signup()">Sign Up</button>
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Signup</h2>
+    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+        <input type="text" name="signupUsername" placeholder="Username" required>
+        <input type="password" name="signupPassword" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+    </div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Login</h2>
+    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+        <input type="text" name="loginUsername" placeholder="Username" required>
+        <input type="password" name="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
     </div>
 
 </body>
