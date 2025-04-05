@@ -149,7 +149,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
       <p id="add-ingredient-message"></p>
 
       <label for="recipeImage">Upload Image:</label>
-      <input type="file" name="recipeImage" accept="image/*" required>
+      <input type="file" id="fileInput" accept="image/*">
+      <button id="uploadButton">Upload Image</button>
+      <p id="status"></p>
 
       <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
@@ -253,6 +255,52 @@ function closePopup() {
   document.getElementById('popupOverlay').style.display = 'none';
   document.getElementById('ingredientPopup').style.display = 'none';
 }
+
+// Wait for the user to select a file and click "Upload"
+document.getElementById('uploadButton').addEventListener('click', async function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            // Send a request to your backend (ELB URL or EC2 URL) to generate the presigned URL
+            const response = await fetch('http://FoodRecipeWebServerELB-602491882.us-east-1.elb.amazonaws.com:3000/generate-presigned-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    filename: file.name,
+                    filetype: file.type
+                })
+            });
+
+            if (!response.ok) {
+                document.getElementById('status').innerText = 'Error generating presigned URL';
+                return;
+            }
+
+            const data = await response.json();
+            const presignedUrl = data.url;
+
+            // Upload the file to S3 using the presigned URL
+            const uploadResponse = await fetch(presignedUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: file
+            });
+
+            if (uploadResponse.ok) {
+                document.getElementById('status').innerText = 'Upload successful!';
+            } else {
+                document.getElementById('status').innerText = 'Error uploading file.';
+            }
+        });
 </script>
 
 <?php mysqli_close($connection); ?>
