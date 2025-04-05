@@ -48,6 +48,13 @@
         $loginResult = Login($connection, $loginName, $loginPassword);
         echo "<script>alert('$loginResult');</script>";
     }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'logout') {
+      session_unset();
+      session_destroy();
+      header("Location: index.php");
+      exit();
+    }
 ?>
 
 <!-- Navbar -->
@@ -61,6 +68,10 @@
       <button onclick="openPopup('signupPopup')">Signup</button>
     <?php else: ?>
       <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+      <form method="POST" style="display:inline;">
+        <input type="hidden" name="action" value="logout">
+        <button type="submit">Logout</button>
+      </form>
     <?php endif; ?>
   </div>
 </div>

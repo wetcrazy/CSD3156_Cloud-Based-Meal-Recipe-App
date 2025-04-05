@@ -46,6 +46,22 @@
         $ingredients[] = $row;
     }
 
+    $signUpName = isset($_POST['signupUsername']) ? mysqli_real_escape_string($connection, $_POST['signupUsername']) : '';
+    $signUPPassword = isset($_POST['signupPassword']) ? mysqli_real_escape_string($connection, $_POST['signupPassword']) : '';
+    
+    $loginName = isset($_POST['loginUsername']) ? mysqli_real_escape_string($connection, $_POST['loginUsername']) : '';
+    $loginPassword = isset($_POST['loginPassword']) ? mysqli_real_escape_string($connection, $_POST['loginPassword']) : '';
+    
+    if (strlen($signUpName) || strlen($signUPPassword)) {
+        $signUpResult = SignUp($connection, $signUpName, $signUPPassword);
+        echo "<script>alert('$signUpResult');</script>";
+    }
+
+    if (strlen($loginName) || strlen($loginPassword)) {
+        $loginResult = Login($connection, $loginName, $loginPassword);
+        echo "<script>alert('$loginResult');</script>";
+    }
+
     mysqli_close($connection);
 ?>
 
@@ -56,6 +72,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($recipe['recipeName']); ?></title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        function openPopup(popupId) {
+            document.getElementById(popupId).style.display = 'block';
+            document.getElementById('popupOverlay').style.display = 'block';
+        }
+
+        function closePopup() {
+            let popups = document.querySelectorAll('.popup');
+            popups.forEach(popup => popup.style.display = 'none');
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+    </script>
 </head>
 <body>
 
@@ -70,9 +98,15 @@
                 <button onclick="openPopup('signupPopup')">Signup</button>
             <?php else: ?>
                 <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="logout">
+                    <button type="submit">Logout</button>
+                </form>
             <?php endif; ?>
         </div>
     </div>
+
+    
 
     <!-- Recipe Content -->
     <div class="container">
@@ -107,6 +141,30 @@
             <p><?php echo nl2br(htmlspecialchars($recipe['recipeSteps'])); ?></p>
         </div>
     </div>
+
+        <!-- Signup Popup -->
+    <div id="signupPopup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Signup</h2>
+    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+        <input type="text" name="signupUsername" placeholder="Username" required>
+        <input type="password" name="signupPassword" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+    </div>
+
+    <!-- Login Popup -->
+    <div id="loginPopup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Login</h2>
+    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+        <input type="text" name="loginUsername" placeholder="Username" required>
+        <input type="password" name="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
+    </div>
+
+    <script src="script.js"></script>
 
     <script>
         function goBack() {
