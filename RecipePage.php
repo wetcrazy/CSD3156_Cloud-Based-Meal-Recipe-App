@@ -62,6 +62,13 @@
         echo "<script>alert('$loginResult');</script>";
     }
 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'logout') {
+        session_unset();
+        session_destroy();
+        header("Location: index.php");
+        exit();
+      }
+
     mysqli_close($connection);
 ?>
 
@@ -146,7 +153,7 @@
     <div id="signupPopup" class="popup">
     <span class="close" onclick="closePopup()">&times;</span>
     <h2>Signup</h2>
-    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+    <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="POST">
         <input type="text" name="signupUsername" placeholder="Username" required>
         <input type="password" name="signupPassword" placeholder="Password" required>
         <button type="submit">Sign Up</button>
@@ -157,7 +164,7 @@
     <div id="loginPopup" class="popup">
     <span class="close" onclick="closePopup()">&times;</span>
     <h2>Login</h2>
-    <form action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" method="POST">
+    <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="POST">
         <input type="text" name="loginUsername" placeholder="Username" required>
         <input type="password" name="loginPassword" placeholder="Password" required>
         <button type="submit">Login</button>
