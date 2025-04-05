@@ -25,12 +25,21 @@
     <script>
         const recipes = <?php echo json_encode($recipes); ?>;
 
-        function bookmarkRecipe() {
-            alert("Recipe saved!");
-        }
-
         function goToRecipePage(recipeId) {
             window.location.href = `RecipePage.php?id=${recipeId}`;
+        }
+
+        function bookmarkRecipe(recipeId) {
+            // AJAX call to bookmark the recipe
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "bookmarkRecipe.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    alert("Recipe bookmarked successfully!");
+                }
+            };
+            xhr.send("recipeId=" + recipeId);
         }
 
         function displayRecipes() {
@@ -54,7 +63,54 @@
                             </div>
                             <div class="recipe-actions">
                                 <?php if (isset($_SESSION['username'])): ?>
-                                    <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe()">Bookmark</button>
+                                    <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe(${recipe.recipeID})">Bookmark</button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </a>
+                `;
+
+                recipeList.appendChild(recipeDiv);
+            });
+        }
+
+        function searchRecipes() {
+            const searchInput = document.querySelector(".search-input").value.toLowerCase();
+            const filteredRecipes = recipes.filter(recipe =>
+                recipe.recipeName.toLowerCase().includes(searchInput) ||
+                recipe.recipeDescription.toLowerCase().includes(searchInput)
+            );
+
+            displayFilteredRecipes(filteredRecipes);
+        }
+
+        function displayFilteredRecipes(filteredRecipes) {
+            const recipeList = document.querySelector(".recipe-list");
+            recipeList.innerHTML = ""; // Clear existing content
+
+            if (filteredRecipes.length === 0) {
+                recipeList.innerHTML = "<p>No recipes found.</p>";
+                return;
+            }
+
+            filteredRecipes.forEach(recipe => {
+                const recipeDiv = document.createElement("div");
+                recipeDiv.classList.add("recipe");
+
+                recipeDiv.innerHTML = `
+                    <a href="javascript:void(0);" onclick="goToRecipePage(${recipe.recipeID})" class="recipe-link">
+                        <div class="recipe-box">
+                            <div class="recipe-thumbnail">
+                                <img src="${recipe.recipeImage}" alt="${recipe.recipeName} Thumbnail">
+                            </div>
+                            <div class="recipe-details">
+                                <h3 class="recipe-title">${recipe.recipeName}</h3>
+                                <p class="recipe-description">${recipe.recipeDescription}</p>
+                                <p class="recipe-cooking-time"><strong>Cooking Time:</strong> ${recipe.recipeTime} minutes</p>
+                            </div>
+                            <div class="recipe-actions">
+                                <?php if (isset($_SESSION['user_id'])): ?>
+                                    <button class="bookmark-btn" onclick="event.stopPropagation(); bookmarkRecipe(${recipe.recipeID})">Bookmark</button>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -66,6 +122,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", displayRecipes);
+        document.querySelector(".search-input").addEventListener("input", searchRecipes);
     </script>
 
 </head>
@@ -87,8 +144,7 @@
     <!-- Recipe List Content -->
     <div class="container">
         <div class="search-bar">
-            <input type="text" placeholder="Search for recipes..." class="search-input">
-            <button class="search-btn">Search</button>
+            <input type="text" placeholder="Search for recipes..." class="search-input">      
         </div>
         <div class="links">
         <?php if (isset($_SESSION['username'])): ?>
