@@ -20,7 +20,7 @@
     $recipeId = isset($_GET['id']) ? intval($_GET['id']) : 1;
 
     // Fetch recipe details
-    $recipeQuery = "SELECT recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps FROM RECIPES WHERE recipeID = ?";
+    $recipeQuery = "SELECT recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName FROM RECIPES WHERE recipeID = ?";
     $stmt = mysqli_prepare($connection, $recipeQuery);
     mysqli_stmt_bind_param($stmt, "i", $recipeId);
     mysqli_stmt_execute($stmt);
@@ -84,6 +84,7 @@
             <?php endif; ?>
         </div>
         <p><?php echo htmlspecialchars($recipe['recipeDescription']); ?></p>
+        <p class="recipe-author">Created by: <strong><?php echo htmlspecialchars($recipe['userName']); ?></strong></p>
 
         <!-- Recipe Image -->
         <div class="recipe-images">
