@@ -54,7 +54,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
     $recipeSteps = mysqli_real_escape_string($connection, $_POST['recipeSteps']);
     $userName = $_SESSION['username'];
 
-    $imagePath = isset($_POST['imageUrl']) ? mysqli_real_escape_string($connection, $_POST['imageUrl']) : '';
+    $imagePath = '';
+    if (!empty($_POST['imageURL'])) {
+      $imagePath = mysqli_real_escape_string($connection, $_POST['imageURL']);
+    }
 
     $insertRecipe = "INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName)
                      VALUES ('$recipeName', '$recipeDescription', '$imagePath', $recipeTime, '$recipeSteps', '$userName')";
@@ -147,7 +150,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
 
       <label for="recipeImage">Upload Image:</label>
       <input type="file" id="recipeImage" accept="image/*" required>
-      <input type="hidden" name="imageUrl" id="imageUrl"> <!-- To store final S3 URL -->
+      <input type="hidden" name="imageURL" id="imageURL" required>
+      <button type="button" class="submit-btn" onclick="uploadImageToS3()">Upload Image</button>
 
       <button type="submit" class="submit-btn">Create Recipe</button>
     </form>
@@ -179,18 +183,18 @@ function addIngredient() {
       const newGroup = document.createElement('div');
       newGroup.className = 'ingredient-group';
 
-      let dropdown = `<select name="ingredient_ids[]" required>
-                        <option value="">-- Select Ingredient --</option>`;
+      let dropdown = <select name="ingredient_ids[]" required>
+                        <option value="">-- Select Ingredient --</option>;
       ingredients.forEach(ing => {
-        dropdown += `<option value="${ing.ingredientID}">${ing.ingredientName} (${ing.ingredientUnit})</option>`;
+        dropdown += <option value="${ing.ingredientID}">${ing.ingredientName} (${ing.ingredientUnit})</option>;
       });
-      dropdown += `</select>`;
+      dropdown += </select>;
 
-      newGroup.innerHTML = `
+      newGroup.innerHTML = 
         ${dropdown}
         <input type="text" name="quantities[]" placeholder="e.g. 1.5" required>
         <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
-      `;
+      ;
       list.appendChild(newGroup);
     });
 }
@@ -237,7 +241,7 @@ function updateAllDropdowns(newId, newName, newUnit) {
   dropdowns.forEach(dropdown => {
     const option = document.createElement('option');
     option.value = newId;
-    option.textContent = `${newName} (${newUnit})`;
+    option.textContent = ${newName} (${newUnit});
     dropdown.appendChild(option);
   });
 }
@@ -252,47 +256,50 @@ function closePopup() {
   document.getElementById('ingredientPopup').style.display = 'none';
 }
 
-async function uploadImageToS3(file) {
-  const response = await fetch('http://localhost:3000/generate-presigned-url', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      filename: file.name,
-      filetype: file.type
-    })
-  });
+async function uploadImageToS3() {
+    const fileInput = document.getElementById('recipeImage');
+    const file = fileInput.files[0];
 
-  const data = await response.json();
-  const s3Url = data.url;
-
-  // Upload file to S3
-  await fetch(s3Url, {
-    method: 'PUT',
-    headers: { 'Content-Type': file.type },
-    body: file
-  });
-
-  // Extract public URL
-  const publicUrl = s3Url.split('?')[0];
-  return publicUrl;
-}
-
-// Override form submission to wait for image upload
-document.querySelector('form').addEventListener('submit', async (e) => {
-  const imageInput = document.getElementById('recipeImage');
-  if (imageInput.files.length > 0) {
-    e.preventDefault(); // Stop form from submitting immediately
-    const file = imageInput.files[0];
-    try {
-      const imageUrl = await uploadImageToS3(file);
-      document.getElementById('imageUrl').value = imageUrl;
-      e.target.submit(); // Submit form after S3 upload
-    } catch (err) {
-      alert("Image upload failed.");
-      console.error(err);
+    if (!file) {
+        alert("Please select an image file.");
+        return;
     }
-  }
-});
+
+    // Step 1: Get presigned URL from your backend
+    const response = await fetch('http://FoodRecipeWebServerELB-602491882.us-east-1.elb.amazonaws.com:3000/generate-presigned-url', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            filename: file.name,
+            filetype: file.type
+        })
+    });
+
+    if (!response.ok) {
+        alert("Failed to generate upload URL.");
+        return;
+    }
+
+    const data = await response.json();
+    const presignedUrl = data.url;
+    const s3URL = presignedUrl.split('?')[0]; // Strip query params for public access
+
+    // Step 2: Upload file to S3
+    const uploadRes = await fetch(presignedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file
+    });
+
+    if (uploadRes.ok) {
+        document.getElementById('imageURL').value = s3URL;
+        alert("Image uploaded successfully!");
+    } else {
+        alert("Failed to upload image to S3.");
+    }
+}
 </script>
 
 <?php mysqli_close($connection); ?>
