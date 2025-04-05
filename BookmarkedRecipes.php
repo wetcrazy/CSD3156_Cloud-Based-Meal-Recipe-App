@@ -6,6 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'logout') {
+    session_unset();
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
 if (!isset($_SESSION['user_id'])) {
     die("<p>Please log in to view your bookmarked recipes.</p>");
 }
@@ -131,13 +138,17 @@ mysqli_close($connection);
     <div class="navbar">
         <a href="index.php" class="navbar-title"><h1>Online Cookbook</h1></a>
         <div class="nav-links">
-            <?php if (!isset($_SESSION['username'])): ?>
-                <button onclick="openPopup('loginPopup')">Login</button>
-                <button onclick="openPopup('signupPopup')">Signup</button>
-            <?php else: ?>
-                <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
-            <?php endif; ?>
-        </div>
+    <?php if (!isset($_SESSION['username'])): ?>
+        <button onclick="openPopup('loginPopup')">Login</button>
+        <button onclick="openPopup('signupPopup')">Signup</button>
+    <?php else: ?>
+        <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="action" value="logout">
+            <button type="submit">Logout</button>
+        </form>
+    <?php endif; ?>
+</div>
     </div>
 
     <div class="container">
