@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['username']) && !is
 
 <?php if (isset($_SESSION['username'])): ?>
   <div class="create-recipe-form">
-    <form action="CreateRecipe.php" method="POST" enctype="multipart/form-data">
+    <form id="recipeForm" action="CreateRecipe.php" method="POST" enctype="multipart/form-data" novalidate>
       <label for="recipeName">Recipe Name:</label>
       <input type="text" name="recipeName" required>
 
@@ -256,8 +256,20 @@ function closePopup() {
 }
 
 // Wait for the user to select a file and click "Upload"
-document.getElementById('uploadButton').addEventListener('click', async function() {
-            const fileInput = document.getElementById('fileInput');
+document.getElementById('uploadButton').addEventListener('click', async function(e) {
+            e.preventDefault();
+	    
+	    const form = document.getElementById('recipeForm');
+	    console.log("validity check");
+	    if(!form.checkValidity())
+	    {
+	    	console.log("form failed");
+		form.reportValidity();
+		return;
+	    }
+	    console.log("form valid");
+
+	    const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
 
             if (!file) {
@@ -300,7 +312,9 @@ document.getElementById('uploadButton').addEventListener('click', async function
                 document.getElementById('imagePath').value = baseUrl;
             } else {
                 document.getElementById('status').innerText = 'Error uploading file.';
-            }
+	    }
+
+	    form.submit();
         });
 </script>
 
