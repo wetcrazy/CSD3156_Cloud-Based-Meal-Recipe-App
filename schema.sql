@@ -64,9 +64,9 @@ VALUES
 -- Insert Recipes
 INSERT INTO RECIPES (recipeName, recipeDescription, recipeImage, recipeTime, recipeSteps, userName) 
 VALUES 
-    ('Chocolate Cake', 'A rich and moist chocolate cake.', 'chocolate_cake.jpg', 60, '1. Preheat oven. 2. Mix ingredients. 3. Bake for 45 minutes.', 'john_doe'),
-    ('Pancakes', 'Fluffy and delicious pancakes.', 'pancakes.jpg', 30, '1. Mix ingredients. 2. Cook on skillet. 3. Serve with syrup.', 'jane_smith'),
-    ('Scrambled Eggs', 'Quick and easy scrambled eggs.', 'scrambled_eggs.jpg', 10, '1. Whisk eggs. 2. Cook in pan. 3. Serve with toast.', 'sam_brown');
+    ('Chocolate Cake', 'A rich and moist chocolate cake.', 'https://foodrecipe-bucket-1.s3.amazonaws.com/public/chocolate_cake.jpg', 60, '1. Preheat oven. 2. Mix ingredients. 3. Bake for 45 minutes.', 'john_doe'),
+    ('Pancakes', 'Fluffy and delicious pancakes.', 'https://foodrecipe-bucket-1.s3.amazonaws.com/public/pancakes.jpg', 30, '1. Mix ingredients. 2. Cook on skillet. 3. Serve with syrup.', 'jane_smith'),
+    ('Scrambled Eggs', 'Quick and easy scrambled eggs.', 'https://foodrecipe-bucket-1.s3.amazonaws.com/public/scrambled_eggs.jpg', 10, '1. Whisk eggs. 2. Cook in pan. 3. Serve with toast.', 'sam_brown');
 
 -- Insert Bookmarks with correct `recipeID` values
 INSERT INTO BOOKMARKS (userID, recipeID) 
